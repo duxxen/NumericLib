@@ -185,7 +185,7 @@ inline nm::complex<T>& nm::complex<T>::operator /=(const V& value)
 template <typename T, typename V> 
 nm::complex<T> operator +(const V& value, const nm::complex<T>& c)
 {
-	return complex(
+	return nm::complex(
 		c.real + value, 
 		c.imag
 	);
@@ -194,7 +194,7 @@ nm::complex<T> operator +(const V& value, const nm::complex<T>& c)
 template <typename T, typename V>
 nm::complex<T> operator -(const V& value, const nm::complex<T>& c)
 {
-	return complex(
+	return nm::complex(
 		c.real - value, 
 		c.imag
 	);
@@ -203,7 +203,7 @@ nm::complex<T> operator -(const V& value, const nm::complex<T>& c)
 template <typename T, typename V>
 nm::complex<T> operator *(const V& value, const nm::complex<T>& c)
 {
-	return complex(
+	return nm::complex(
 		c.real * value, 
 		c.imag * value
 	);
@@ -212,7 +212,7 @@ nm::complex<T> operator *(const V& value, const nm::complex<T>& c)
 template <typename T, typename V>
 nm::complex<T> operator /(const V& value, const nm::complex<T>& c)
 {
-	return complex(
+	return nm::complex(
 		c.real / value,
 		c.imag / value
 	);

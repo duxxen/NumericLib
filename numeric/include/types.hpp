@@ -44,7 +44,7 @@ namespace nm
 	// defining literals
 	namespace literals
 	{
-		constexpr vect64f operator "" v(uint128 n) { return vect64f(n, 1); }
+		constexpr vect64f operator "" V(uint128 n) { return vect64f(n, 1); }
 	}
 }
 

@@ -33,11 +33,6 @@ namespace nm
 		template <typename V> complex& operator *=(const V& value);
 		template <typename V> complex& operator /=(const V& value);
 
-		template <typename V> friend complex operator +(const V& value, const complex& c);
-		template <typename V> friend complex operator -(const V& value, const complex& c);
-		template <typename V> friend complex operator *(const V& value, const complex& c);
-		template <typename V> friend complex operator /(const V& value, const complex& c);
-
 		T real;
 		T imag;
 	};
@@ -55,5 +50,10 @@ namespace nm
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const nm::complex<T>& value);
+
+template <typename T, typename V> nm::complex<T> operator +(const V& value, const nm::complex<T>& c);
+template <typename T, typename V> nm::complex<T> operator -(const V& value, const nm::complex<T>& c);
+template <typename T, typename V> nm::complex<T> operator *(const V& value, const nm::complex<T>& c);
+template <typename T, typename V> nm::complex<T> operator /(const V& value, const nm::complex<T>& c);
 
 #include "../lib/complex.inl"
