@@ -205,6 +205,26 @@ inline nm::vect<nm::complex<C>> operator-(const nm::vect<T>& v, nm::complex<C> c
 	return product;
 }
 
+template <typename T, typename C> 
+nm::vect<nm::complex<C>> operator +(const nm::vect<T>& v, const nm::vect<nm::complex<C>>& m)
+{
+	assert(v.size() == m.size());
+	auto product(m);
+	for (int i = 0; i < v.size(); i++)
+		product[i] += v[i];
+	return product;
+}
+
+template <typename T, typename C>
+nm::vect<nm::complex<C>> operator -(const nm::vect<T>& v, const nm::vect<nm::complex<C>>& m)
+{
+	assert(v.size() == m.size());
+	auto product(m);
+	for (int i = 0; i < v.size(); i++)
+		product[i] -= v[i];
+	return product;
+}
+
 namespace nm
 {
 	template <typename T>

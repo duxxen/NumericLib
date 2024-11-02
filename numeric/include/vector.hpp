@@ -15,15 +15,15 @@ template <typename T, typename C> nm::vect<T>& operator /=(nm::vect<T>& v, const
 					
 template <typename T, typename C> nm::vect<T> operator +(const C& c, const nm::vect<T>& v);
 template <typename T, typename C> nm::vect<T> operator +(const nm::vect<T>& v, const C& c);
-template <typename T, typename C> nm::vect<T> operator +(const nm::vect<T>& v, const nm::vect<C>& m);
+template <typename T, typename C> nm::vect<T> operator +(const nm::vect<T>& v, const nm::vect<C>& m);	// need vect<complex> realisation
 template <typename T, typename C> nm::vect<T>& operator +=(nm::vect<T>& v, const C& c);
-template <typename T, typename C> nm::vect<T>& operator +=(nm::vect<T>& v, const nm::vect<C>& c);
+template <typename T, typename C> nm::vect<T>& operator +=(nm::vect<T>& v, const nm::vect<C>& m);
 					
 template <typename T, typename C> nm::vect<T> operator -(const C& c, const nm::vect<T>& v);
 template <typename T, typename C> nm::vect<T> operator -(const nm::vect<T>& v, const C& c);
-template <typename T, typename C> nm::vect<T> operator -(const nm::vect<T>& v, const nm::vect<T>& m);
+template <typename T, typename C> nm::vect<T> operator -(const nm::vect<T>& v, const nm::vect<C>& m);	// need vect<complex> realisation
 template <typename T, typename C> nm::vect<T>& operator -=(nm::vect<T>& v, const C& c);
-template <typename T, typename C> nm::vect<T>& operator -=(nm::vect<T>& v, const nm::vect<T>& m);
+template <typename T, typename C> nm::vect<T>& operator -=(nm::vect<T>& v, const nm::vect<C>& m);
 
 template <typename T, typename C> nm::vect<nm::complex<C>> operator *(nm::complex<C> c, const nm::vect<T>& v);
 template <typename T, typename C> nm::vect<nm::complex<C>> operator *(const nm::vect<T>& v, nm::complex<C> c);
@@ -34,6 +34,9 @@ template <typename T, typename C> nm::vect<nm::complex<C>> operator +(nm::comple
 template <typename T, typename C> nm::vect<nm::complex<C>> operator +(const nm::vect<T>& v, nm::complex<C> c);
 template <typename T, typename C> nm::vect<nm::complex<C>> operator -(nm::complex<C> c, const nm::vect<T>& v);
 template <typename T, typename C> nm::vect<nm::complex<C>> operator -(const nm::vect<T>& v, nm::complex<C> c);
+
+template <typename T, typename C> nm::vect<nm::complex<C>> operator +(const nm::vect<T>& v, const nm::vect<nm::complex<C>>& m);
+template <typename T, typename C> nm::vect<nm::complex<C>> operator -(const nm::vect<T>& v, const nm::vect<nm::complex<C>>& m);
 
 namespace nm
 {
