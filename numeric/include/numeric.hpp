@@ -1,6 +1,7 @@
 #pragma once
 #include "dependencies.hpp"
 #include "types.hpp"
+#include "complex.hpp"
 #include "vector.hpp"
-
-namespace nm = numeric;
+#include "matrix.hpp"
+#include "functions.hpp"
