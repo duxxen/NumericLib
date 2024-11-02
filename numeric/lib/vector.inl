@@ -236,8 +236,8 @@ namespace nm
 			for (auto& v : vector)
 				v = -v;
 			break;
-		case nm::op::add:
-		case nm::op::sub:
+		case nm::op::sum:
+		case nm::op::diff:
 		case nm::op::mult:
 		case nm::op::div:
 			throw std::exception("non unary operation!");
@@ -258,11 +258,11 @@ namespace nm
 		case nm::op::neg:
 			throw std::exception("non binary operation!");
 			break;
-		case nm::op::add:
+		case nm::op::sum:
 			for (auto& v : vector)
 				v += value;
 			break;
-		case nm::op::sub:
+		case nm::op::diff:
 			for (auto& v : vector)
 				v -= value;
 			break;

@@ -33,8 +33,8 @@ namespace nm
 	enum class op
 	{
 		neg,		// unary	-
-		add,		// binary	+
-		sub,		// binary	-
+		sum,		// binary	+
+		diff,		// binary	-
 		mult,		// binary	*
 		div,		// binary	/
 		pow,		// unary	^x
