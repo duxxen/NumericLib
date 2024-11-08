@@ -1,50 +1,66 @@
 #pragma once
 #include "dependencies.hpp"
 
+/***********************************************************************
+ * 
+ *             NumericLib types declaration file
+ * 
+ * Declared types:
+ *      (u)int8_t -   (un)signed char
+ *      (u)int16_t -  (un)signed short
+ *      (u)int32_t -  (un)signed int
+ *      (u)int64_t -  (un)signed long
+ *      (u)int128_t - (un)signed long long
+ * 
+ *      float32_t -  float
+ *      float64_t -  double
+ *      float128_t - long double
+ * 
+ * Basic comp type (config.hpp):
+ *      float_t
+ * 
+ * This file defines all the base types used throughout the library.
+ * 
+ ***********************************************************************/
+
 namespace nm
 {
-	template <typename T> using vect = std::vector<T>;
-	template <typename T> using matr = std::vector<vect<T>>;
+	typedef signed char			int8_t;
+	typedef signed short		int16_t;
+	typedef signed int			int32_t;
+	typedef signed long			int64_t;
+	typedef	signed long long	int128_t;
 
-	typedef signed char			int8;
-	typedef signed short		int16;
-	typedef signed int			int32;
-	typedef signed long			int64;
-	typedef	signed long long	int128;
+	typedef unsigned char		uint8_t;
+	typedef unsigned short		uint16_t;
+	typedef unsigned int		uint32_t;
+	typedef unsigned long		uint64_t;
+	typedef	unsigned long long	uint128_t;
 
-	typedef unsigned char		uint8;
-	typedef unsigned short		uint16;
-	typedef unsigned int		uint32;
-	typedef unsigned long		uint64;
-	typedef	unsigned long long	uint128;
+	typedef float				float32_t;
+	typedef double				float64_t;
+	typedef long double			float128_t;
 
-	typedef float				float32;
-	typedef double				float64;
-	typedef long double			float128;
+	#ifdef BASIC_COMP_TYPE_FLOAT32
+	typedef float32_t float_t;
+	#endif
+	#ifdef BASIC_COMP_TYPE_FLOAT64
+	typedef float64_t float_t;
+	#endif
+	#ifdef BASIC_COMP_TYPE_FLOAT128
+	typedef float128_t float_t;
+	#endif
 
-	typedef vect<uint32>		vect32u;
-	typedef vect<int32>			vect32i;
-	typedef vect<float64>		vect64f;
-
-	typedef vect<uint32>		matr32u;
-	typedef vect<int32>			matr32i;
-	typedef matr<float64>		matr64f;
-
-	enum class op
+	namespace typing
 	{
-		neg,		// unary	-
-		sum,		// binary	+
-		diff,		// binary	-
-		mult,		// binary	*
-		div,		// binary	/
-		pow,		// unary	^x
-		root,		// unary	^1/x
-	};
+		using std::remove_cv_t;
+		using std::_Is_any_of_v;
+		using std::bool_constant;
+		using std::is_integral;
+		using std::is_floating_point;
 
-	// defining literals
-	namespace literals
-	{
-		constexpr vect64f operator "" V(uint128 n) { return vect64f(n, 1); }
+		using std::enable_if_t;
+		using std::conditional_t;
 	}
 }
 
