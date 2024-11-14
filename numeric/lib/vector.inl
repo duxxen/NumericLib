@@ -35,9 +35,9 @@ namespace nm
 		}
 
 		template<typename T>
-		inline float_t vector_base<T>::abs() const
+		inline T vector_base<T>::abs() const
 		{
-			float_t sumq = 0;
+			T sumq = NULL;
 			for (int i = 0; i < size(); i++)
 				sumq += pow(abs(base[i]), 2);
 			return sqrt(sumq);
@@ -55,10 +55,10 @@ namespace nm
 		template<typename T>
 		inline vector_base<T> vector_base<T>::normalized() const
 		{
-			auto result(*this);
+			vector_base<T> result(size());
 			auto len = abs();
 			for (int i = 0; i < size(); i++)
-				result[i] /= len;
+				result[i] = base[i] / len;
 			return result;
 		}
 
@@ -72,6 +72,15 @@ namespace nm
 		inline const T& vector_base<T>::operator[](int i) const
 		{
 			return base[i];
+		}
+
+		template<typename T>
+		inline vector_base<T> vector_base<T>::operator-() const
+		{
+			vector_base<T> result(size());
+			for (int i = 0; i < size(); i++)
+				result[i] = -base[i];
+			return result;
 		}
 
 		template<typename T>

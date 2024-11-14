@@ -48,8 +48,8 @@ namespace nm
 			T abs() const;
 			T arg() const;
 
-			auto inverse() const;
-			complex_base conjugate() const;
+			complex_base inversed() const;
+			complex_base conjugated() const;
 
 			complex_base operator-() const;
 

@@ -24,17 +24,17 @@ namespace nm
 		}
 
 		template<typename T>
-		inline auto complex_base<T>::inverse() const
+		inline complex_base<T> complex_base<T>::inversed() const
 		{
-			float_t qsum = real * real + imag * imag;
-			return complex_t(
+			T qsum = real * real + imag * imag;
+			return complex_base<T>(
 				real / qsum,
 				-imag / qsum
 			);
 		}
 
 		template<typename T>
-		inline complex_base<T> complex_base<T>::conjugate() const
+		inline complex_base<T> complex_base<T>::conjugated() const
 		{
 			return complex_base(
 				real,

@@ -48,13 +48,15 @@ namespace nm
 
 			uint128_t size() const;
 
-			float_t abs() const;
+			T abs() const;
 
 			vector_base& normalize();
 			vector_base normalized() const;
 
 			T& operator [](int i);
 			const T& operator [](int i) const;
+
+			vector_base operator -() const;
 
 			template <typename V> auto operator +(const vector_base<V>& oth) const;
 			template <typename V> auto operator -(const vector_base<V>& oth) const;
