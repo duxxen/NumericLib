@@ -49,7 +49,7 @@ namespace nm
 			T arg() const;
 
 			complex_base inversed() const;
-			complex_base conjugated() const;
+			complex_base conjugate() const;
 
 			complex_base operator-() const;
 
@@ -78,18 +78,18 @@ namespace nm
 		};
 	}
 
-	typedef base_type::complex_base<float32_t>	complex32_t;
-	typedef base_type::complex_base<float64_t>	complex64_t;
-	typedef base_type::complex_base<float128_t>	complex128_t;
+	typedef base_type::complex_base<float32_t>	complex64_t;
+	typedef base_type::complex_base<float64_t>	complex128_t;
+	typedef base_type::complex_base<float128_t>	complex256_t;
 
 	#ifdef BASIC_COMP_TYPE_FLOAT32
-	typedef complex32_t complex_t;
-	#endif
-	#ifdef BASIC_COMP_TYPE_FLOAT64
 	typedef complex64_t complex_t;
 	#endif
-	#ifdef BASIC_COMP_TYPE_FLOAT128
+	#ifdef BASIC_COMP_TYPE_FLOAT64
 	typedef complex128_t complex_t;
+	#endif
+	#ifdef BASIC_COMP_TYPE_FLOAT128
+	typedef complex256_t complex_t;
 	#endif
 
 	namespace literals
@@ -101,7 +101,7 @@ namespace nm
 	namespace typing
 	{
 		template <typename _Ty>
-		constexpr bool is_complex_v = _Is_any_of_v<remove_cv_t<_Ty>, complex32_t, complex64_t, complex128_t>;
+		constexpr bool is_complex_v = _Is_any_of_v<remove_cv_t<_Ty>, complex64_t, complex128_t, complex256_t>;
 
 		template <typename _Ty>
 		struct is_complex : bool_constant<is_complex_v<_Ty>> {};
@@ -115,6 +115,8 @@ namespace nm
 		template <typename _Ty, typename _Vy>
 		struct is_stronger : bool_constant<is_stronger_v<_Ty, _Vy>> {};
 	}
+
+	template <typename T> T abs(base_type::complex_base<T> value);
 }
 
 template <typename T>

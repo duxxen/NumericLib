@@ -29,56 +29,115 @@ namespace nm
 		}
 
 		template<typename T>
+		inline vector_base<T>& vector_base<T>::fill(T value)
+		{
+			for (auto& element : base)
+				element = value;
+			return *this;
+		}
+
+		template<typename T>
 		inline uint128_t vector_base<T>::size() const
 		{
 			return base.size();
 		}
 
 		template<typename T>
-		inline T vector_base<T>::abs() const
+		inline T& vector_base<T>::operator[](int32_t i)
 		{
-			T sumq = NULL;
-			for (int i = 0; i < size(); i++)
-				sumq += pow(abs(base[i]), 2);
-			return sqrt(sumq);
+			if (i < 0)
+				return base[base.size() + i];
+			return base[i];
 		}
 
 		template<typename T>
-		inline vector_base<T>& vector_base<T>::normalize()
+		inline const T& vector_base<T>::operator[](int32_t i) const
 		{
-			auto len = abs();
-			for (int i = 0; i < size(); i++)
-				base[i] /= len;
-			return *this;
+			if (i < 0)
+				return base[base.size() + i];
+			return base[i];
 		}
 
 		template<typename T>
-		inline vector_base<T> vector_base<T>::normalized() const
+		inline vector_base<T> vector_base<T>::slice(int32_t beg, int32_t end, uint32_t step) const
 		{
-			vector_base<T> result(size());
-			auto len = abs();
-			for (int i = 0; i < size(); i++)
-				result[i] = base[i] / len;
+			int32_t st = step;
+			auto n = 1 + std::abs(end - beg) / st;
+			if (beg > end)
+				st = -st;
+			vector_base<T> result(n);
+			for (int i = 0; i < n; i++)
+				result[i] = (*this)[beg + i * st];
 			return result;
 		}
 
 		template<typename T>
-		inline T& vector_base<T>::operator[](int i)
+		inline vector_base<T>& vector_base<T>::sort(bool ascend)
 		{
-			return base[i];
+			auto pred = ascend ?
+				[](T a, T b) -> bool { return a < b; }
+				:
+				[](T a, T b) -> bool { return a > b; };
+
+			std::stable_sort(base.begin(), base.end(), pred);
+			return *this;
 		}
 
 		template<typename T>
-		inline const T& vector_base<T>::operator[](int i) const
+		inline vector_base<T> vector_base<T>::sorted(bool ascend) const
 		{
-			return base[i];
+			vector_base<T> result(base);
+			auto pred = ascend ? 
+				[](T a, T b) -> bool { return a < b; } 
+				: 
+				[](T a, T b) -> bool { return a > b; };
+
+			std::stable_sort(result.base.begin(), result.base.end(), pred);
+			return result;
+		}
+
+		template<typename T>
+		inline T vector_base<T>::max() const
+		{
+			return std::max(base);
+		}
+
+		template<typename T>
+		inline T vector_base<T>::min() const
+		{
+			return std::min(base);
+		}
+
+		template<typename T>
+		inline std::pair<T, T> vector_base<T>::minmax() const
+		{
+			return std::minmax(base);
+		}
+
+		template<typename T>
+		inline T vector_base<T>::sum(float32_t p) const
+		{
+			T sumv = NULL;
+			for (auto& element : base)
+				sumv += pow(element, p);
+			return sumv;
+		}
+
+		template<typename T>
+		inline float_t vector_base<T>::abs() const
+		{
+			float_t sumv = NULL;
+			for (auto& element : base)
+				sumv += pow(nm::abs(element), 2);
+			return sqrt(sumv);
 		}
 
 		template<typename T>
 		inline vector_base<T> vector_base<T>::operator-() const
 		{
-			vector_base<T> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			vector_base<T> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = -base[i];
 			return result;
 		}
@@ -87,9 +146,10 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator+(const vector_base<V>& oth) const
 		{
-			assert(size() == oth.size());
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			assert(n == oth.size());
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] + oth[i];
 			return result;
 		}
@@ -98,9 +158,10 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator-(const vector_base<V>& oth) const
 		{
-			assert(size() == oth.size());
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			assert(n == oth.size());
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] - oth[i];
 			return result;
 		}
@@ -108,8 +169,9 @@ namespace nm
 		template<typename T>
 		inline vector_base<T>& vector_base<T>::operator+=(const vector_base<T>& oth)
 		{
-			assert(size() == oth.size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			assert(n == oth.size());
+			for (int i = 0; i < n; i++)
 				base[i] += oth[i];
 			return *this;
 		}
@@ -117,8 +179,9 @@ namespace nm
 		template<typename T>
 		inline vector_base<T>& vector_base<T>::operator-=(const vector_base<T>& oth)
 		{
-			assert(size() == oth.size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			assert(n == oth.size());
+			for (int i = 0; i < n; i++)
 				base[i] -= oth[i];
 			return *this;
 		}
@@ -127,8 +190,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator+(const V& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] + value;
 			return result;
 		}
@@ -137,8 +201,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator-(const V& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] - value;
 			return result;
 		}
@@ -147,8 +212,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator*(const V& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = value * base[i];
 			return result;
 		}
@@ -157,8 +223,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator/(const V& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<T>, vector_base<V>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] / value;
 			return result;
 		}
@@ -167,8 +234,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator+(const complex_base<V>& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] + value;
 			return result;
 		}
@@ -177,8 +245,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator-(const complex_base<V>& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] - value;
 			return result;
 		}
@@ -187,8 +256,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator*(const complex_base<V>& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] * value;
 			return result;
 		}
@@ -197,8 +267,9 @@ namespace nm
 		template<typename V>
 		inline auto vector_base<T>::operator/(const complex_base<V>& value) const
 		{
-			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(size());
-			for (int i = 0; i < size(); i++)
+			auto n = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, vector_base<complex_base<T>>, vector_base<complex_base<V>>> result(n);
+			for (int i = 0; i < n; i++)
 				result[i] = base[i] / value;
 			return result;
 		}
@@ -242,6 +313,7 @@ inline std::ostream& operator<<(std::ostream& out, const nm::base_type::vector_b
 {
 	for (auto& elem : vector.base)
 		out << elem << "\n";
+	out << typeid(vector).name() << "\n";
 	return out;
 }
 

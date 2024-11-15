@@ -46,15 +46,23 @@ namespace nm
 			vector_base(const std::vector<T>& stdvect);
 			vector_base(const std::initializer_list<T>& rawvect);
 
+			vector_base<T>& fill(T value);
+
 			uint128_t size() const;
+			T& operator [](int32_t i);
+			const T& operator [](int32_t i) const;
 
-			T abs() const;
+			vector_base<T> slice(int32_t beg, int32_t end, uint32_t step = 1) const;
 
-			vector_base& normalize();
-			vector_base normalized() const;
+			vector_base<T>& sort(bool ascend = true);
+			vector_base<T> sorted(bool ascend = true) const;
 
-			T& operator [](int i);
-			const T& operator [](int i) const;
+			T max() const;
+			T min() const;
+			std::pair<T, T> minmax() const;
+
+			T sum(float32_t pow = 1) const;
+			float_t abs() const;
 
 			vector_base operator -() const;
 
@@ -88,21 +96,21 @@ namespace nm
 	typedef base_type::vector_base<float64_t>		vect64f_t;
 	typedef base_type::vector_base<float128_t>		vect128f_t;
 
-	typedef base_type::vector_base<complex32_t>		vect32c_t;
 	typedef base_type::vector_base<complex64_t>		vect64c_t;
 	typedef base_type::vector_base<complex128_t>	vect128c_t;
+	typedef base_type::vector_base<complex256_t>	vect256c_t;
 
 	#ifdef BASIC_COMP_TYPE_FLOAT32
 	typedef vect32f_t vectf_t;
-	typedef vect32c_t vectc_t;
+	typedef vect64c_t vectc_t;
 	#endif
 	#ifdef BASIC_COMP_TYPE_FLOAT64
-	typedef vect64f_t vectf_t;
-	typedef vect64c_t vectc_t;
+	typedef vect64f_t  vectf_t;
+	typedef vect128c_t vectc_t;
 	#endif
 	#ifdef BASIC_COMP_TYPE_FLOAT128
 	typedef vect128f_t vectf_t;
-	typedef vect128c_t vectc_t;
+	typedef vect256c_t vectc_t;
 	#endif
 
 	namespace literals
@@ -119,7 +127,7 @@ namespace nm
 		struct is_floating_vector : bool_constant<is_floating_vector_v<_Ty>> {};
 
 		template <typename _Ty>
-		constexpr bool is_complex_vector_v = _Is_any_of_v<remove_cv_t<_Ty>, vect32c_t, vect64c_t, vect128c_t>;
+		constexpr bool is_complex_vector_v = _Is_any_of_v<remove_cv_t<_Ty>, vect64c_t, vect128c_t, vect256c_t>;
 
 		template <typename _Ty>
 		struct is_complex_vector : bool_constant<is_complex_vector_v<_Ty>> {};

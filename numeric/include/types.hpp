@@ -57,6 +57,7 @@ namespace nm
 		using std::_Is_any_of_v;
 		using std::bool_constant;
 		using std::is_integral;
+		using std::is_arithmetic;
 		using std::is_floating_point;
 
 		using std::enable_if_t;

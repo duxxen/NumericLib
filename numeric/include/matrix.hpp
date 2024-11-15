@@ -47,23 +47,43 @@ namespace nm
 			matrix_base(const std::vector<std::vector<T>>& stdmatr);
 			matrix_base(const std::initializer_list<std::initializer_list<T>>& rawmatr);
 
+			matrix_base& fill(T value);
+			matrix_base& fill_diagonal(T value, int32_t index = 0);
+			matrix_base& fill_diagonal(vector_base<T> values, int32_t index = 0);
+
 			uint128_t rows() const;
 			uint128_t cols() const;
 			std::pair<uint128_t, uint128_t> size() const;
 
 			vector_base<T>& row(int i);
 			const vector_base<T>& row(int i) const;
-
 			vector_base<T> col(int i) const;
 
 			vector_base<T>& operator [](int i);
 			const vector_base<T>& operator [](int i) const;
+
+			matrix_base slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend, 
+				uint32_t rstep = 1, uint32_t cstep = 1);
+
+			bool is_square() const;
+
+			matrix_base inversed() const;
+			matrix_base adjugate() const;
+			matrix_base conjugate() const;
+
+			float_t det() const;
+			float_t minor(uint128_t i) const;
+			float_t minor(uint128_t i, uint128_t j) const;
+
 
 			matrix_base operator -() const;
 
 			template <typename V> auto operator +(const matrix_base<V>& oth) const;
 			template <typename V> auto operator -(const matrix_base<V>& oth) const;
 			template <typename V> auto operator *(const matrix_base<V>& oth) const;
+
+			template <typename V> auto operator *(const vector_base<V>& vec) const;
+			template <typename V> auto operator *(const vector_base<complex_base<V>>& cvec) const;
 
 			matrix_base& operator +=(const matrix_base<T>& oth);
 			matrix_base& operator -=(const matrix_base<T>& oth);
@@ -84,7 +104,6 @@ namespace nm
 			matrix_base& operator *=(const T& value);
 			matrix_base& operator /=(const T& value);
 
-
 			std::vector<vector_base<T>> base;
 		};
 	}
@@ -93,9 +112,9 @@ namespace nm
 	typedef base_type::matrix_base<float64_t>		matr64f_t;
 	typedef base_type::matrix_base<float128_t>		matr128f_t;
 
-	typedef base_type::matrix_base<complex32_t>		matr32c_t;
 	typedef base_type::matrix_base<complex64_t>		matr64c_t;
 	typedef base_type::matrix_base<complex128_t>	matr128c_t;
+	typedef base_type::matrix_base<complex256_t>	matr256c_t;
 
 	#ifdef BASIC_COMP_TYPE_FLOAT32
 	typedef matr32f_t matrf_t;
@@ -119,7 +138,7 @@ namespace nm
 		struct is_floating_matrix : bool_constant<is_floating_matrix_v<_Ty>> {};
 
 		template <typename _Ty>
-		constexpr bool is_complex_matrix_v = _Is_any_of_v<remove_cv_t<_Ty>, matr32c_t, matr64c_t, matr128c_t>;
+		constexpr bool is_complex_matrix_v = _Is_any_of_v<remove_cv_t<_Ty>, matr64c_t, matr128c_t, matr256c_t>;
 
 		template <typename _Ty>
 		struct is_complex_matrix : bool_constant<is_complex_matrix_v<_Ty>> {};
@@ -145,3 +164,17 @@ template <typename T, typename V> auto operator *(const nm::base_type::complex_b
 template <typename T, typename V> auto operator /(const nm::base_type::complex_base<V>& value, const nm::base_type::matrix_base<T>& matrix);
 
 #include "../lib/matrix.inl"
+
+template<typename T>
+inline std::ostream& operator<<(std::ostream& out, const nm::base_type::matrix_base<T>& matrix)
+{
+	auto [m, n] = matrix.size();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+			out << "\t" << matrix[i][j];
+		out << "\n";
+	}
+	out << typeid(matrix).name() << "\n";
+	return out;
+}

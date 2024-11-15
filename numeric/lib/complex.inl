@@ -34,13 +34,19 @@ namespace nm
 		}
 
 		template<typename T>
-		inline complex_base<T> complex_base<T>::conjugated() const
+		inline complex_base<T> complex_base<T>::conjugate() const
 		{
 			return complex_base(
 				real,
 				-imag
 			);
 		}
+	}
+
+	template<typename T>
+	T abs(base_type::complex_base<T> value)
+	{
+		return value.abs();
 	}
 }
 
