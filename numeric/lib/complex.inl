@@ -54,7 +54,7 @@ template <typename T>
 inline std::ostream& operator<<(std::ostream& out, const nm::base_type::complex_base<T>& value)
 {
 	out << value.real;
-	if (value.imag >= 0)
+	if (value.imag >= 0) 
 		out << '+';
 	out << value.imag << 'i';
 	return out;
@@ -233,6 +233,36 @@ inline nm::base_type::complex_base<T>& nm::base_type::complex_base<T>::operator 
 	return *this;
 }
 
+template<typename T>
+template<typename V>
+inline bool nm::base_type::complex_base<T>::operator==(const complex_base<V>& oth) const
+{
+	return real == oth.real
+		&& imag == oth.imag;
+}
+
+template<typename T>
+template<typename V>
+inline bool nm::base_type::complex_base<T>::operator!=(const complex_base<V>& oth) const
+{
+	return real != oth.real
+		|| imag != oth.imag;
+}
+
+template<typename T>
+template<typename V>
+inline bool nm::base_type::complex_base<T>::operator==(const V& value) const
+{
+	return abs() == value;
+}
+
+template<typename T>
+template<typename V>
+inline bool nm::base_type::complex_base<T>::operator!=(const V& value) const
+{
+	return abs() != value;
+}
+
 template<typename T, typename V>
 inline auto operator+(const V& value, const nm::base_type::complex_base<T>& c)
 {
@@ -247,7 +277,7 @@ inline auto operator -(const V& value, const nm::base_type::complex_base<T>& c)
 {
 	return nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::complex_base<T>, nm::base_type::complex_base<V>>(
 		value - c.real,
-		c.imag
+		-c.imag
 	);
 }
 

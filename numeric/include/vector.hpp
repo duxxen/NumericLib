@@ -34,6 +34,9 @@ namespace nm
 	namespace base_type
 	{
 		template <typename T>
+		struct matrix_base;
+
+		template <typename T>
 		struct vector_base
 		{
 			static_assert(
@@ -61,8 +64,20 @@ namespace nm
 			T min() const;
 			std::pair<T, T> minmax() const;
 
-			T sum(float32_t pow = 1) const;
+			uint128_t imax() const;
+			uint128_t imin() const;
+			std::pair<T, T> iminmax() const;
+
+			T sum() const;
 			float_t abs() const;
+
+			T norm1() const;
+			T norm2() const;
+			T normi() const;
+
+			template <typename V> auto dot(const vector_base<V>& oth) const;
+			template <typename V> auto dot(const matrix_base<V>& mat) const;
+			template <typename V> auto cross(const vector_base<V>& oth) const;
 
 			vector_base operator -() const;
 
@@ -86,7 +101,6 @@ namespace nm
 			vector_base& operator -=(const T& value);
 			vector_base& operator *=(const T& value);
 			vector_base& operator /=(const T& value);
-
 
 			std::vector<T> base;
 		};

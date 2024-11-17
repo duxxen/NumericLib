@@ -99,27 +99,49 @@ namespace nm
 		template<typename T>
 		inline T vector_base<T>::max() const
 		{
-			return std::max(base);
+			return *std::max_element(base.begin(), base.end());
 		}
 
 		template<typename T>
 		inline T vector_base<T>::min() const
 		{
-			return std::min(base);
+			return *std::min_element(base.begin(), base.end());
 		}
 
 		template<typename T>
 		inline std::pair<T, T> vector_base<T>::minmax() const
 		{
-			return std::minmax(base);
+			return *std::minmax_element(base.begin(), base.end());
 		}
 
 		template<typename T>
-		inline T vector_base<T>::sum(float32_t p) const
+		inline uint128_t vector_base<T>::imax() const
+		{
+			return std::distance(base.begin(), std::max_element(base.begin(), base.end()));
+		}
+
+		template<typename T>
+		inline uint128_t vector_base<T>::imin() const
+		{
+			return std::distance(base.begin(), std::min_element(base.begin(), base.end()));
+		}
+
+		template<typename T>
+		inline std::pair<T, T> vector_base<T>::iminmax() const
+		{
+			auto [imn, imx] = std::minmax_element(base.begin(), base.end());
+			return std::make_pair(
+				std::distance(base.begin(), imn),
+				std::distance(base.begin(), imx)
+			);
+		}
+
+		template<typename T>
+		inline T vector_base<T>::sum() const
 		{
 			T sumv = NULL;
 			for (auto& element : base)
-				sumv += pow(element, p);
+				sumv += element;
 			return sumv;
 		}
 
@@ -133,6 +155,30 @@ namespace nm
 		}
 
 		template<typename T>
+		inline T vector_base<T>::norm1() const
+		{
+			T sumv = 0;
+			for (auto& element : base)
+				sumv += nm::abs(element);
+			return sumv;
+		}
+
+		template<typename T>
+		inline T vector_base<T>::norm2() const
+		{
+			return abs();
+		}
+
+		template<typename T>
+		inline T vector_base<T>::normi() const
+		{
+			T amax = nm::abs(base[0]);
+			for (auto& element : base)
+				amax = nm::abs(element);
+			return amax;
+		}
+
+		template<typename T>
 		inline vector_base<T> vector_base<T>::operator-() const
 		{
 			auto n = size();
@@ -140,6 +186,33 @@ namespace nm
 			for (int i = 0; i < n; i++)
 				result[i] = -base[i];
 			return result;
+		}
+
+		template<typename T>
+		template<typename V>
+		inline auto vector_base<T>::dot(const vector_base<V>& oth) const
+		{
+			using TS = typing::conditional_t(typing::is_stronger<T, V>(), T, V);
+			TS product = 0;
+			auto n = size();
+			assert(n == oth.size());
+			for (int i = 0; i < n; i++)
+				product += base[i] * oth[i];
+			return product;
+		}
+
+		template<typename T>
+		template<typename V>
+		inline auto vector_base<T>::cross(const vector_base<V>& oth) const
+		{
+			assert(size() == oth.size() && size() == 3);
+			using TS = typing::conditional_t(typing::is_stronger<T, V>(), T, V);
+
+			return vector_base<TS>({
+				base[1] * oth[2] - base[2] * oth[1],
+				base[2] * oth[0] - base[0] * oth[2],
+				base[0] * oth[1] - base[1] * oth[0]
+			});
 		}
 
 		template<typename T>

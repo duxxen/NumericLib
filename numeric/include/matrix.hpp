@@ -57,7 +57,9 @@ namespace nm
 
 			vector_base<T>& row(int i);
 			const vector_base<T>& row(int i) const;
+
 			vector_base<T> col(int i) const;
+			vector_base<T> diagonal(int i) const;
 
 			vector_base<T>& operator [](int i);
 			const vector_base<T>& operator [](int i) const;
@@ -65,16 +67,31 @@ namespace nm
 			matrix_base slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend, 
 				uint32_t rstep = 1, uint32_t cstep = 1);
 
+			uint128_t row_max() const;
+			uint128_t row_min() const;
+			uint128_t col_max() const;
+			uint128_t col_min() const;
+
 			bool is_square() const;
+			bool is_diagonal() const;
+
+			bool is_triangle() const;
+			bool is_triangleU() const;
+			bool is_triangleL() const;
+
+			matrix_base& transpose();
+			matrix_base transposed() const;
 
 			matrix_base inversed() const;
 			matrix_base adjugate() const;
 			matrix_base conjugate() const;
 
-			float_t det() const;
-			float_t minor(uint128_t i) const;
-			float_t minor(uint128_t i, uint128_t j) const;
+			T det() const;
+			T minor(uint128_t i) const;
+			T minor(uint128_t i, uint128_t j) const;
 
+			template <typename V> auto dot(const matrix_base<V>& oth) const;
+			template <typename V> auto dot(const vector_base<V>& vec) const;
 
 			matrix_base operator -() const;
 
@@ -87,7 +104,6 @@ namespace nm
 
 			matrix_base& operator +=(const matrix_base<T>& oth);
 			matrix_base& operator -=(const matrix_base<T>& oth);
-			matrix_base& operator *=(const matrix_base<T>& oth);
 
 			template <typename V> auto operator +(const V& value) const;
 			template <typename V> auto operator -(const V& value) const;
@@ -164,17 +180,3 @@ template <typename T, typename V> auto operator *(const nm::base_type::complex_b
 template <typename T, typename V> auto operator /(const nm::base_type::complex_base<V>& value, const nm::base_type::matrix_base<T>& matrix);
 
 #include "../lib/matrix.inl"
-
-template<typename T>
-inline std::ostream& operator<<(std::ostream& out, const nm::base_type::matrix_base<T>& matrix)
-{
-	auto [m, n] = matrix.size();
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < n; j++)
-			out << "\t" << matrix[i][j];
-		out << "\n";
-	}
-	out << typeid(matrix).name() << "\n";
-	return out;
-}

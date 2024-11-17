@@ -73,6 +73,12 @@ namespace nm
 			template <typename V> complex_base& operator *=(const V& value);
 			template <typename V> complex_base& operator /=(const V& value);
 
+			template <typename V> bool operator ==(const complex_base<V>& oth) const;
+			template <typename V> bool operator !=(const complex_base<V>& oth) const;
+
+			template <typename V> bool operator ==(const V& value) const;
+			template <typename V> bool operator !=(const V& value) const;
+
 			T real;
 			T imag;
 		};
