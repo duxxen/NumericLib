@@ -1,7 +1,7 @@
 #pragma once
 #include "dependencies.hpp"
+
 #include "types.hpp"
-#include "complex.hpp"
-#include "vector.hpp"
-#include "matrix.hpp"
-#include "operations.hpp"
+#include "types/complex.hpp"
+#include "types/vector.hpp"
+#include "types/matrix.hpp"

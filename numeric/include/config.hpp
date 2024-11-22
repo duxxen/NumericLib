@@ -1,14 +1,14 @@
 #pragma once
 
 /*************************************************************
- * 
+ *
  *		 NumericLib configuration file
- * 
+ *
  * You can edit this file by hand, changing the flags below
  * To set flag, just replace the pre-processor directive
- * 'if 0' by 'if 1' to enable the flag. 
+ * 'if 0' by 'if 1' to enable the flag.
  * 'if 1' by 'if 0' to disable the flag.
- * 
+ *
  *************************************************************/
 
 #if 0
@@ -17,9 +17,9 @@
  /*
   *	BASIC COMPUTATION TYPE - type, which will be returned after
   * every computation. By default 'float64' is the basic type.
-  * 
+  *
   *	Of course, some functions returns other types if it declared.
-  * 
+  *
   * (!!!) if enabled this - must disable other BASIC_COMP_TYPE_ flags (!!!)
   */
 
@@ -32,36 +32,10 @@
   /*
    * BASIC COMPUTATION TYPE - type, which will be returned after
    * every computation. By default 'float64' is the basic type.
-   * 
+   *
    * Of course, some functions returns other types if it declared.
-   * 
+   *
    * (!!!) if enabled this - must disable other BASIC_COMP_TYPE_ flags (!!!)
    */
 
 #endif
-
-#if 1
-#define DEFAULT_VECT_ELEMENT_COUT_SEPARATOR '\n'
-
-   /*
-	 * DEFAULT VECT ELEMENT COUT CEPARATOR - symbol, which separates
-	 * vector element by other during print.
-	 * Default element separator is ' '.
-	 *
-	 * (!!!) if enabled this - must disable other DEFAULT_VECT_ELEMENT_COUT_SEPARATOR flags (!!!)
-	 */
-
-#endif 
-
-#if 0
-#define DEFAULT_VECT_ELEMENT_COUT_SEPARATOR ' '
-
-   /*
-	* DEFAULT VECT ELEMENT COUT CEPARATOR - symbol, which separates
-	* vector element by other during print. 
-	* Default element separator is ' '.
-	*
-	* (!!!) if enabled this - must disable other DEFAULT_VECT_ELEMENT_COUT_SEPARATOR flags (!!!)
-	*/
-
-#endif 
