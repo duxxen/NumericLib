@@ -352,7 +352,7 @@ namespace nm
 				- base[0][2] * base[1][1] * base[2][0];
 
 			default:
-				return linalg::gauss_determinant(*this);
+				return gauss_determinant(*this);
 				break;
 			}
 		}
@@ -507,6 +507,42 @@ namespace nm
 		}
 
 		template<typename T>
+		inline matrix_base<T>& matrix_base<T>::operator+=(const T& value)
+		{
+			for (auto& row : base)
+				for (auto& elem : row)
+					elem += value;
+			return *this;
+		}
+
+		template<typename T>
+		inline matrix_base<T>& matrix_base<T>::operator-=(const T& value)
+		{
+			for (auto& row : base)
+				for (auto& elem : row)
+					elem -= value;
+			return *this;
+		}
+
+		template<typename T>
+		inline matrix_base<T>& matrix_base<T>::operator*=(const T& value)
+		{
+			for (auto& row : base)
+				for (auto& elem : row)
+					elem *= value;
+			return *this;
+		}
+
+		template<typename T>
+		inline matrix_base<T>& matrix_base<T>::operator/=(const T& value)
+		{
+			for (auto& row : base)
+				for (auto& elem : row)
+					elem /= value;
+			return *this;
+		}
+
+		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator+(const V& value) const
 		{
@@ -558,8 +594,121 @@ namespace nm
 		template<typename V>
 		inline auto matrix_base<T>::operator+(const complex_base<V>& value) const
 		{
-
+			auto [m, n] = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, matrix_base<complex_base<T>>, matrix_base<complex_base<V>>> result(m, n);
+			for (int i = 0; i < m; i++)
+				for (int j = 0; j < n; j++)
+					result[i][j] = base[i][j] + value;
 		}
+
+		template<typename T>
+		template<typename V>
+		inline auto matrix_base<T>::operator-(const complex_base<V>& value) const
+		{
+			auto [m, n] = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, matrix_base<complex_base<T>>, matrix_base<complex_base<V>>> result(m, n);
+			for (int i = 0; i < m; i++)
+				for (int j = 0; j < n; j++)
+					result[i][j] = base[i][j] - value;
+		}
+
+		template<typename T>
+		template<typename V>
+		inline auto matrix_base<T>::operator*(const complex_base<V>& value) const
+		{
+			auto [m, n] = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, matrix_base<complex_base<T>>, matrix_base<complex_base<V>>> result(m, n);
+			for (int i = 0; i < m; i++)
+				for (int j = 0; j < n; j++)
+					result[i][j] = base[i][j] * value;
+		}
+
+		template<typename T>
+		template<typename V>
+		inline auto matrix_base<T>::operator/(const complex_base<V>& value) const
+		{
+			auto [m, n] = size();
+			typing::conditional_t<typing::is_stronger<T, V>::value, matrix_base<complex_base<T>>, matrix_base<complex_base<V>>> result(m, n);
+			for (int i = 0; i < m; i++)
+				for (int j = 0; j < n; j++)
+					result[i][j] = base[i][j] / value;
+		}
+	}
+
+	matr32f_t identity_matrix(uint128_t n)
+	{
+		return matr32f_t(n).fill_diagonal(1);
+	}
+
+	template<typename T>
+	base_type::matrix_base<T> diagonal(const uint128_t& n, const T& value)
+	{
+		return base_type::matrix_base<T>(n).fill_diagonal(value);
+	}
+
+	template<typename T>
+	base_type::matrix_base<T> diagonal(const base_type::vector_base<T>& values)
+	{
+		return base_type::matrix_base<T>(values.size()).fill_diagonal(values);
+	}
+
+	template<typename T>
+	base_type::matrix_base<T> multidiagonal(const uint128_t& n, const std::initializer_list<std::pair<int32_t, T>>& values)
+	{
+		base_type::matrix_base<T> matrix(n);
+		for (auto& pair : values)
+			matrix.fill_diagonal(pair.second, pair.first);
+		return matrix;
+	}
+
+	template<typename T>
+	base_type::matrix_base<T> multidiagonal(const std::initializer_list<std::pair<int32_t, base_type::vector_base<T>>>& values)
+	{
+		base_type::matrix_base<T> matrix(values.begin()->second.size());
+		for (auto& pair : values)
+			matrix.fill_diagonal(pair.second, pair.first);
+		return matrix;
+	}
+
+	template<typename T>
+	base_type::matrix_base<T> triangulation(const base_type::matrix_base<T>& matr)
+	{
+		assert(matr.is_square());
+		auto m = matr.rows();
+		base_type::matrix_base<T> result(matr);
+		for (int i = 0; i < m; i++)
+		{
+			/*auto imax = i;
+			for (int j = i + 1; j < m; j++)
+				if (result[j][j] > result[imax][imax])
+					imax = j;
+			std::swap(result[i], result[imax]);*/
+
+			for (int j = i + 1; j < m; j++)
+			{
+				auto mul = -result[j][i] / result[i][i];
+				for (int k = 0; k < m; k++)
+					result[j][k] += result[i][k] * mul;
+			}
+		}
+		return result;
+	}
+
+	template<typename T>
+	T gauss_determinant(const base_type::matrix_base<T>& matr, bool triangle_check)
+	{
+		assert(matr.is_square());
+		base_type::matrix_base<T> triangle(matr);
+
+		if (triangle_check && !matr.is_triangle())	
+			triangle = triangulation(matr);
+
+		auto m = matr.rows();
+		T det = 1;
+		for (int i = 0; i < m; i++)
+			det *= triangle[i][i];
+
+		return det;
 	}
 }
 
@@ -575,4 +724,132 @@ inline std::ostream& operator<<(std::ostream& out, const nm::base_type::matrix_b
 	}
 	out << typeid(matrix).name() << "\n";
 	return out;
+}
+
+template<typename T, typename V>
+inline auto operator+(const V& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using MT = nm::base_type::matrix_base<T>;
+	using MV = nm::base_type::matrix_base<V>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value + matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator-(const V& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using MT = nm::base_type::matrix_base<T>;
+	using MV = nm::base_type::matrix_base<V>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value - matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator*(const V& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using MT = nm::base_type::matrix_base<T>;
+	using MV = nm::base_type::matrix_base<V>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value * matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator/(const V& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using MT = nm::base_type::matrix_base<T>;
+	using MV = nm::base_type::matrix_base<V>;
+
+	auto [m, n] = matrix.size(); 
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value / matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator+(const nm::base_type::complex_base<V>& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using MT = nm::base_type::matrix_base<CT>;
+	using MV = nm::base_type::matrix_base<CV>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+	
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value + matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator-(const nm::base_type::complex_base<V>& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using MT = nm::base_type::matrix_base<CT>;
+	using MV = nm::base_type::matrix_base<CV>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value - matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator*(const nm::base_type::complex_base<V>& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using MT = nm::base_type::matrix_base<CT>;
+	using MV = nm::base_type::matrix_base<CV>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value * matrix.base[i][j];
+	return result;
+}
+
+template<typename T, typename V>
+inline auto operator/(const nm::base_type::complex_base<V>& value, const nm::base_type::matrix_base<T>& matrix)
+{
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using MT = nm::base_type::matrix_base<CT>;
+	using MV = nm::base_type::matrix_base<CV>;
+
+	auto [m, n] = matrix.size();
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, MT, MV> result(matrix.size());
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			result[i][j] = value / matrix.base[i][j];
+	return result;
 }

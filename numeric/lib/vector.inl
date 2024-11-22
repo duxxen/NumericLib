@@ -5,13 +5,13 @@ namespace nm
 	namespace base_type
 	{
 		template <typename T>
-		vector_base<T>::vector_base(size_t n) :
+		vector_base<T>::vector_base(uint128_t n) :
 			base(n)
 		{
 		}
 
 		template <typename T>
-		vector_base<T>::vector_base(size_t n, T value) :
+		vector_base<T>::vector_base(uint128_t n, T value) :
 			base(n, value)
 		{
 		}
@@ -393,7 +393,9 @@ inline std::ostream& operator<<(std::ostream& out, const nm::base_type::vector_b
 template<typename T, typename V>
 inline auto operator+(const V& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<T>, nm::base_type::vector_base<V>> result(vector.size());
+	using VT = nm::base_type::vector_base<T>;
+	using VV  = nm::base_type::vector_base<V>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value + vector.base[i];
 	return result;
@@ -402,7 +404,9 @@ inline auto operator+(const V& value, const nm::base_type::vector_base<T>& vecto
 template<typename T, typename V>
 inline auto operator-(const V& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<T>, nm::base_type::vector_base<V>> result(vector.size());
+	using VT = nm::base_type::vector_base<T>;
+	using VV = nm::base_type::vector_base<V>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value - vector.base[i];
 	return result;
@@ -411,7 +415,9 @@ inline auto operator-(const V& value, const nm::base_type::vector_base<T>& vecto
 template<typename T, typename V>
 inline auto operator*(const V& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<T>, nm::base_type::vector_base<V>> result(vector.size());
+	using VT = nm::base_type::vector_base<T>;
+	using VV = nm::base_type::vector_base<V>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value * vector.base[i];
 	return result;
@@ -420,7 +426,9 @@ inline auto operator*(const V& value, const nm::base_type::vector_base<T>& vecto
 template<typename T, typename V>
 inline auto operator/(const V& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<T>, nm::base_type::vector_base<V>> result(vector.size());
+	using VT = nm::base_type::vector_base<T>;
+	using VV = nm::base_type::vector_base<V>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value / vector.base[i];
 	return result;
@@ -429,7 +437,12 @@ inline auto operator/(const V& value, const nm::base_type::vector_base<T>& vecto
 template<typename T, typename V>
 inline auto operator+(const nm::base_type::complex_base<V>& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<nm::base_type::complex_base<T>>, nm::base_type::vector_base<nm::base_type::complex_base<V>>> result(vector.size());
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using VT = nm::base_type::vector_base<CT>;
+	using VV = nm::base_type::vector_base<CV>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
+
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value + vector.base[i];
 	return result;
@@ -438,7 +451,12 @@ inline auto operator+(const nm::base_type::complex_base<V>& value, const nm::bas
 template<typename T, typename V>
 inline auto operator-(const nm::base_type::complex_base<V>& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<nm::base_type::complex_base<T>>, nm::base_type::vector_base<nm::base_type::complex_base<V>>> result(vector.size());
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using VT = nm::base_type::vector_base<CT>;
+	using VV = nm::base_type::vector_base<CV>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
+
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value - vector.base[i];
 	return result;
@@ -447,7 +465,12 @@ inline auto operator-(const nm::base_type::complex_base<V>& value, const nm::bas
 template<typename T, typename V>
 inline auto operator*(const nm::base_type::complex_base<V>& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<nm::base_type::complex_base<T>>, nm::base_type::vector_base<nm::base_type::complex_base<V>>> result(vector.size());
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using VT = nm::base_type::vector_base<CT>;
+	using VV = nm::base_type::vector_base<CV>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
+
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value * vector.base[i];
 	return result;
@@ -456,7 +479,12 @@ inline auto operator*(const nm::base_type::complex_base<V>& value, const nm::bas
 template<typename T, typename V>
 inline auto operator/(const nm::base_type::complex_base<V>& value, const nm::base_type::vector_base<T>& vector)
 {
-	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, nm::base_type::vector_base<nm::base_type::complex_base<T>>, nm::base_type::vector_base<nm::base_type::complex_base<V>>> result(vector.size());
+	using CT = nm::base_type::complex_base<T>;
+	using CV = nm::base_type::complex_base<V>;
+	using VT = nm::base_type::vector_base<CT>;
+	using VV = nm::base_type::vector_base<CV>;
+	nm::typing::conditional_t<nm::typing::is_stronger<T, V>::value, VT, VV> result(vector.size());
+
 	for (int i = 0; i < vector.size(); i++)
 		result[i] = value / vector.base[i];
 	return result;
