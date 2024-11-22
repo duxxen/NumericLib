@@ -15,13 +15,13 @@ namespace nm
 		template<typename T>
 		inline T complex_base<T>::abs() const
 		{
-			return sqrt(real * real + imag * imag);
+			return nm::abs(*this);
 		}
 
 		template<typename T>
 		inline T complex_base<T>::arg() const
 		{
-			return acos(real / abs());
+			return nm::arg(*this);
 		}
 
 		template<typename T>
@@ -47,7 +47,19 @@ namespace nm
 	template<typename T>
 	T abs(tybase::complex_base<T> value)
 	{
-		return value.abs();
+		return sqrt(
+			value.real * value.real + 
+			value.imag * value.imag
+		);
+	}
+
+	template<typename T>
+	T arg(tybase::complex_base<T> value)
+	{
+		auto phi = atan(value.imag / value.real);
+		if (value.real > 0)      return phi;
+		else if (value.real < 0) return value.imag < 0 ? -M_PI + phi : M_PI + phi;
+		else                     return value.imag < 0 ? -M_PI_2 : M_PI_2;
 	}
 }
 
