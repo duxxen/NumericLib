@@ -73,11 +73,14 @@ namespace nm
 
 	// ******************************************************************************************** MATRIX PRODUCT
 
-	template <typename T, typename V> auto dot(const tybase::vector_base<T>& vct1, const tybase::vector_base<V>& vct2);
-	template <typename T, typename V> auto cross(const tybase::vector_base<T>& vct1, const tybase::vector_base<V>& vct2);
+	template <typename T, typename V> auto dot(const tybase::matrix_base<T>& mtr1, const tybase::matrix_base<V>& mtr2);
+	template <typename T, typename V> auto dot(const tybase::matrix_base<T>& mtr, const tybase::vector_base<V>& vct);
+	template <typename T, typename V> auto dot(const tybase::vector_base<T>& vct, const tybase::matrix_base<V>& mtr);
 
 	// ******************************************************************************************** MULTI PRODUCT
 
 	template <typename T, typename... Rest>
 	auto multidot(const tybase::vector_base<T> vct, const Rest&... rest);
 }
+
+#include "operations.inl"

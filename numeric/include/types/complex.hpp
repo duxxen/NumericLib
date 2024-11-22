@@ -143,10 +143,16 @@ namespace nm
 		constexpr bool is_stronger_v = (
 			is_complex<_Ty>() && is_floating_point<_Vy>() ||
 			sizeof(_Ty) > sizeof(_Vy)
-			);
+		);
 
 		template <typename _Ty, typename _Vy>
 		struct is_stronger : bool_constant<is_stronger_v<_Ty, _Vy>> {};
+
+		template <bool _Test, typename _Ty>
+		struct inner_switch { using inner = _Ty; };
+
+		template <typename _Ty>
+		struct inner_switch<true, _Ty> { using inner = _Ty::TYPE_; };
 	}
 }
 

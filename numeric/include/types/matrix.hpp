@@ -37,17 +37,13 @@ namespace nm
 
 			// ******************************************************************************** CONSTRUCTION
 
-			matrix_base(uint128_t mn = 0);
-			matrix_base(uint128_t m, uint128_t n);
-			matrix_base(uint128_t m, uint128_t n, T value);
-
-			matrix_base(const vector_base<T>& nmvect); // checkout (!)
-			matrix_base(const std::vector<std::vector<T>>& stdmatr);
+			matrix_base(size1D_t mn = 0);
+			matrix_base(size1D_t m, size1D_t n);
+			matrix_base(size1D_t m, size1D_t n, T value);
 			matrix_base(const std::initializer_list<std::initializer_list<T>>& rawmatr);
 
-			matrix_base& fill(T value);
-			matrix_base& fill_diagonal(T value, int32_t index = 0);
-			matrix_base& fill_diagonal(const vector_base<T>& values, int32_t index = 0);
+			void fill_diagonal(T value, int32_t index = 0);
+			void fill_diagonal(const vector_base<T>& values, int32_t index = 0);
 
 			// ******************************************************************************** SIZE
 
@@ -65,7 +61,7 @@ namespace nm
 			vector_base<T> diagonal(int128_t i) const;
 
 			matrix_base slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend,
-				int32_t rstep = 1, int32_t cstep = 1);
+				int32_t rstp = 1, int32_t cstp = 1);
 
 			// ******************************************************************************** MINMAX
 
@@ -75,10 +71,9 @@ namespace nm
 
 			// ******************************************************************************** TRANSFORMS
 
-			matrix_base& normalize();
 			matrix_base normalized() const;
 
-			matrix_base& transpose();
+			void transpose();
 			matrix_base transposed() const;
 
 			matrix_base inversed() const;
@@ -125,17 +120,10 @@ namespace nm
 			template <typename V> auto operator *(const vector_base<V>& vct) const;
 			template <typename V> auto operator *(const vector_base<complex_base<V>>& vct) const;
 
-			// ******************************************************************************** SELF OPERATORS
-
-			matrix_base& operator +=(const T& value);
-			matrix_base& operator -=(const T& value);
-			matrix_base& operator *=(const T& value);
-			matrix_base& operator /=(const T& value);
-
-			matrix_base& operator +=(const matrix_base<T>& oth);
-			matrix_base& operator -=(const matrix_base<T>& oth);
-
 		private:
+
+			size1D_t rows_;
+			size1D_t cols_;
 		};
 	}
 

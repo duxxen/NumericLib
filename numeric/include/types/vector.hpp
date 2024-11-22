@@ -52,12 +52,12 @@ namespace nm
 
 			// ******************************************************************************** CONSTRUCTION
 
-			vector_base(uint128_t n = 0);
-			vector_base(uint128_t n, const T& value);
+			vector_base(size1D_t n = 0);
+			vector_base(size1D_t n, const T& value);
 			vector_base(const std::vector<T>& stdvect);
 			vector_base(const std::initializer_list<T>& rawvect);
 
-			vector_base& fill(T value);
+			void fill(T value);
 
 			// ******************************************************************************** INTERFACE
 
@@ -76,9 +76,15 @@ namespace nm
 
 			vector_base slice(int128_t beg, int128_t end, int128_t step = 1) const;
 
+			auto begin();
+			auto begin() const;
+
+			auto end();
+			auto end() const;
+
 			// ******************************************************************************** SORTING
 
-			vector_base& sort(bool ascend = true);
+			void sort(bool ascend = true);
 			vector_base sorted(bool ascend = true) const;
 
 			// ******************************************************************************** MINMAX
@@ -96,7 +102,7 @@ namespace nm
 			// vector_base& transposed();      // must be row_vect implementation (!)
 			// vector_base transposed() const; // must be row_vect implementation (!)
 
-			vector_base& normalize();
+			void normalize();
 			vector_base normalized() const;
 
 			// ******************************************************************************** UNARY OPERATIONS
@@ -110,7 +116,7 @@ namespace nm
 			// ******************************************************************************** BINARY OPERATIONS
 
 			template <typename V> auto dot(const vector_base<V>& oth) const;
-			template <typename V> auto dot(const matrix_base<V>& mat) const;	// matrix.inl (!)
+			template <typename V> auto dot(const matrix_base<V>& mat) const;
 			template <typename V> auto cross(const vector_base<V>& oth) const;
 
 			// ******************************************************************************** EASY OPERATORS
@@ -136,13 +142,13 @@ namespace nm
 
 			// ******************************************************************************** SELF OPERATORS
 
-			vector_base& operator +=(const T& value);
-			vector_base& operator -=(const T& value);
-			vector_base& operator *=(const T& value);
-			vector_base& operator /=(const T& value);
+			void operator +=(const T& value);
+			void operator -=(const T& value);
+			void operator *=(const T& value);
+			void operator /=(const T& value);
 
-			vector_base& operator +=(const vector_base<T>& oth);
-			vector_base& operator -=(const vector_base<T>& oth);
+			void operator +=(const vector_base<T>& oth);
+			void operator -=(const vector_base<T>& oth);
 
 			// ******************************************************************************** PROPERTIES
 
@@ -212,7 +218,7 @@ namespace nm
 // ******************************************************************************************** IO OVERRIDE
 
 template <typename T> 
-std::ostream& operator <<(std::ostream& out, const nm::tybase::vector_base<T>& vector);
+std::ostream& operator <<(std::ostream& out, const nm::tybase::vector_base<T>& vct);
 
 // ******************************************************************************************** POSITIONAL OPERATORS OVERRIDE
 
