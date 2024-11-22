@@ -178,27 +178,6 @@ namespace nm
 	typedef vect256c_t vectc_t;
 	#endif
 
-	// **************************************************************************************** FUNCTIONS
-
-	namespace linalg
-	{
-		template <typename T> T abs(tybase::vector_base<T> vct);
-
-		template<typename T> auto norm1(tybase::vector_base<T> vct);
-		template<typename T> auto norm2(tybase::vector_base<T> vct);
-		template<typename T> auto normi(tybase::vector_base<T> vct);
-	}
-
-	template <typename T> T max(tybase::vector_base<T> vct);
-	template <typename T> T min(tybase::vector_base<T> vct);
-
-	template <typename T> size1D_t argmax(tybase::vector_base<T> vct);
-	template <typename T> size1D_t argmin(tybase::vector_base<T> vct);
-	template <typename T> size2D_t argminmax(tybase::vector_base<T> vct);
-
-	template <typename T, typename V> auto dot(tybase::vector_base<T> vct1, tybase::vector_base<V> vct2);
-	template <typename T, typename V> auto cross(tybase::vector_base<T> vct1, tybase::vector_base<V> vct2);
-
 	// **************************************************************************************** LITERALS
 
 	namespace literals

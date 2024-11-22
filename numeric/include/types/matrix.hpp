@@ -47,7 +47,7 @@ namespace nm
 
 			matrix_base& fill(T value);
 			matrix_base& fill_diagonal(T value, int32_t index = 0);
-			matrix_base& fill_diagonal(vector_base<T> values, int32_t index = 0);
+			matrix_base& fill_diagonal(const vector_base<T>& values, int32_t index = 0);
 
 			// ******************************************************************************** SIZE
 
@@ -93,8 +93,8 @@ namespace nm
 
 			// ******************************************************************************** BINARY OPERATIONS
 
-			template <typename V> auto dot(matrix_base<V>& oth) const;
-			template <typename V> auto dot(vector_base<V>& vct) const;
+			template <typename V> auto dot(const matrix_base<V>& oth) const;
+			template <typename V> auto dot(const vector_base<V>& vct) const;
 
 			// ******************************************************************************** EASY OPERATORS
 
@@ -162,25 +162,6 @@ namespace nm
 	typedef matr256c_t matrc_t;
 	#endif
 
-	// **************************************************************************************** FUNCTIONS
-
-	namespace linalg
-	{
-		template <typename T> T det(tybase::matrix_base<T> vct);
-
-		template<typename T> auto norm1(tybase::matrix_base<T> vct);
-		template<typename T> auto norm2(tybase::matrix_base<T> vct);
-		template<typename T> auto normi(tybase::matrix_base<T> vct);
-
-		template <typename T> size2D_t argmax(tybase::matrix_base<T> vct);
-		template <typename T> size2D_t argmin(tybase::matrix_base<T> vct);
-		template <typename T> std::pair<size2D_t, size2D_t> argminmax(tybase::matrix_base<T> vct);
-
-		template <typename T, typename V> auto dot(tybase::matrix_base<T> mtr1, tybase::matrix_base<V> mtr2);
-		template <typename T, typename V> auto dot(tybase::matrix_base<T> mtr, tybase::vector_base<V> vct);
-		template <typename T, typename V> auto dot(tybase::vector_base<T> vct, tybase::matrix_base<V> mtr);
-	}
-
 	// **************************************************************************************** TYPE COMPARING
 
 	namespace tycomp
@@ -223,3 +204,5 @@ template <typename T, typename V> auto operator /(const nm::tybase::complex_base
 
 template <typename T, typename V> auto operator *(const nm::tybase::vector_base<V>& vct, const nm::tybase::matrix_base<T>& mtr);
 template <typename T, typename V> auto operator *(const nm::tybase::vector_base<nm::tybase::complex_base<V>>& vct, const nm::tybase::matrix_base<T>& mtr);
+
+#include "matrix.inl"
