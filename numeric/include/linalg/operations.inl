@@ -5,46 +5,70 @@ namespace nm
 {
 	namespace linalg
 	{
+		template<typename T>
+		T abs(const tybase::vector_base<T>& vct)
+		{
+			return vct.abs();
+		}
 
+		template<typename T>
+		auto norm1(const tybase::vector_base<T>& vct)
+		{
+			return vct.norm1();
+		}
+
+		template<typename T>
+		auto norm2(const tybase::vector_base<T>& vct)
+		{
+			return vct.norm2();
+		}
+
+		template<typename T>
+		auto normi(const tybase::vector_base<T>& vct)
+		{
+			return vct.normi();
+		}
+
+		template<typename T>
+		auto norme(const tybase::vector_base<T>& vct)
+		{
+			return vct.norme();
+		}
+
+		template<typename T>
+		auto normp(const uint128_t& p, const tybase::vector_base<T>& vct)
+		{
+			return vct.normp(p);
+		}
 	}
 
 	template<typename T, typename V>
 	auto dot(const tybase::vector_base<T>& vct1, const tybase::vector_base<V>& vct2)
 	{
-		using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
-		assert(vct1.size() == vct2.size());
-
-		RT product = 0;
-		for (int i = 0; i < vct1.size(); i++)
-			product += vct1[i] * vct2[i];
-		return product;
+		vct1.dot(vct2);
 	}
 
 	template<typename T, typename V>
 	auto cross(const tybase::vector_base<T>& vct1, const tybase::vector_base<V>& vct2)
 	{
-		using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
-		assert(vct1.size() == vct2.size() && vct1.size() == 3);
-
-		return tybase::vector_base<RT>({
-			vct1[1] * vct2[2] - vct1[2] * vct2[1],
-			vct1[2] * vct2[0] - vct1[0] * vct2[2],
-			vct1[0] * vct2[1] - vct1[1] * vct2[0]
-		});
+		return vct1.cross(vct2);
 	}
 
 	template<typename T, typename V>
 	auto dot(const tybase::matrix_base<T>& mtr1, const tybase::matrix_base<V>& mtr2)
 	{
+		return mtr1.dot(mtr2);
 	}
 
 	template<typename T, typename V>
 	auto dot(const tybase::matrix_base<T>& mtr, const tybase::vector_base<V>& vct)
 	{
+		return mtr.dot(vct);
 	}
 
 	template<typename T, typename V>
 	auto dot(const tybase::vector_base<T>& vct, const tybase::matrix_base<V>& mtr)
 	{
+		return vct.dot(mtr);
 	}
 }

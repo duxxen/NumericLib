@@ -116,11 +116,6 @@ namespace nm
 	typedef complex256_t complex_t;
 	#endif
 
-	// **************************************************************************************** FUNCTIONS
-
-	template <typename T> T abs(tybase::complex_base<T> value);
-	template <typename T> T arg(tybase::complex_base<T> value);
-
 	// **************************************************************************************** LITERALS
 
 	namespace literals

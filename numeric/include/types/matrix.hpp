@@ -45,6 +45,16 @@ namespace nm
 			void fill_diagonal(T value, int32_t index = 0);
 			void fill_diagonal(const vector_base<T>& values, int32_t index = 0);
 
+			// ******************************************************************************** INSERTION
+
+			void append_row(const vector_base<T>& vct);
+			void append_col(const vector_base<T>& vct);
+			void append(const vector_base<T>& vct, bool isrow = true);
+
+			void insert_row(int32_t ind, const vector_base<T>& vct);
+			void insert_col(int32_t ind, const vector_base<T>& vct);
+			void insert(int32_t ind, const vector_base<T>& vct, bool isrow = true);
+
 			// ******************************************************************************** SIZE
 
 			size1D_t rows() const;

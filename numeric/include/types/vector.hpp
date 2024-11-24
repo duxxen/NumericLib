@@ -64,6 +64,14 @@ namespace nm
 			std::vector<T>& stdvect();
 			const std::vector<T>& stdvect() const;
 
+			// ******************************************************************************** INSERTION
+
+			void append(const T& val);
+			void append(const vector_base<T>& vct);
+
+			void insert(int32_t ind, const T& val);
+			void insert(int32_t ind, const vector_base<T>& vct);
+
 			// ********************************************************************************	SIZE, INDEXING
 
 			size1D_t size() const;
@@ -112,11 +120,13 @@ namespace nm
 			auto norm1() const;
 			auto norm2() const;
 			auto normi() const;
+			auto norme() const;
+			auto normp(const uint32_t& p) const;
 
 			// ******************************************************************************** BINARY OPERATIONS
 
 			template <typename V> auto dot(const vector_base<V>& oth) const;
-			template <typename V> auto dot(const matrix_base<V>& mat) const;
+			template <typename V> auto dot(const matrix_base<V>& mat) const;   // matrix.inl
 			template <typename V> auto cross(const vector_base<V>& oth) const;
 
 			// ******************************************************************************** EASY OPERATORS

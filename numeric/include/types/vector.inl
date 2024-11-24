@@ -50,6 +50,32 @@ namespace nm
 		}
 
 		template<typename T>
+		inline void vector_base<T>::append(const T& val)
+		{
+			base.push_back(val);
+		}
+
+		template<typename T>
+		inline void vector_base<T>::append(const vector_base<T>& vct)
+		{
+			base.insert(base.end(), vct.begin(), vct.end());
+		}
+
+		template<typename T>
+		inline void vector_base<T>::insert(int32_t ind, const T& val)
+		{
+			if (ind < 0) ind = size() + ind;
+			base.insert(base.begin() + ind, val);
+		}
+
+		template<typename T>
+		inline void vector_base<T>::insert(int32_t ind, const vector_base<T>& vct)
+		{
+			if (ind < 0) ind = size() + ind;
+			base.insert(base.begin() + ind, vct.begin(), vct.end());
+		}
+
+		template<typename T>
 		inline size1D_t vector_base<T>::size() const
 		{
 			return base.size();
@@ -178,9 +204,9 @@ namespace nm
 		template<typename T>
 		inline void vector_base<T>::normalize()
 		{
-			auto len = norm2();
+			auto nrm = norm2();
 			for (auto& elem : base)
-				elem /= len;
+				elem /= nrm;
 		}
 
 		template<typename T>
@@ -194,7 +220,7 @@ namespace nm
 		template<typename T>
 		inline auto vector_base<T>::abs() const
 		{
-			return norm2();
+			return norme();
 		}
 
 		template<typename T>
@@ -226,24 +252,48 @@ namespace nm
 		}
 
 		template<typename T>
-		template<typename V>
-		inline auto vector_base<T>::dot(const vector_base<V>& oth) const
+		inline auto vector_base<T>::norme() const
 		{
-			return nm::dot(*this, oth);
+			return norm2();
+		}
+
+		template<typename T>
+		inline auto vector_base<T>::normp(const uint32_t& p) const
+		{
+			using RT = tycomp::inner_switch<tycomp::is_complex<T>::value, T>::inner;
+			assert(p >= 1);
+
+			RT sumv = 0;
+			for (auto& elem : base)
+				sumv += nm::pow(nm::abs(elem), p);
+			return nm::pow(sumv, 1.0 / p);
 		}
 
 		template<typename T>
 		template<typename V>
-		inline auto vector_base<T>::dot(const matrix_base<V>& mat) const
+		inline auto vector_base<T>::dot(const vector_base<V>& oth) const
 		{
-			return nm::dot(*this, mat);
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			assert(size() == oth.size());
+
+			RT product = 0;
+			for (int i = 0; i < size(); i++)
+				product += base[i] * oth[i];
+			return product;
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto vector_base<T>::cross(const vector_base<V>& oth) const
 		{
-			return nm::cross(*this, oth);
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			assert(size() == oth.size() && size() == 3);
+
+			return tybase::vector_base<RT>({
+				base[1] * oth[2] - base[2] * oth[1],
+				base[2] * oth[0] - base[0] * oth[2],
+				base[0] * oth[1] - base[1] * oth[0]
+			});
 		}
 
 		template<typename T>
@@ -431,7 +481,7 @@ inline std::ostream& operator<<(std::ostream& out, const nm::tybase::vector_base
 	auto& vect = vct.stdvect();
 	for (auto& elem : vect)
 		out << elem << "\n";
-	out << typeid(vct).name() << "\n";
+	out << typeid(vct).name() << " { " << vct.size() << " }\n";
 	return out;
 }
 

@@ -56,6 +56,61 @@ namespace nm
 		}
 
 		template<typename T>
+		inline void matrix_base<T>::append_row(const vector_base<T>& vct)
+		{
+			assert(vct.size() == cols_);
+			vector_base<T>::append(vct);
+			rows_++;
+		}
+
+		template<typename T>
+		inline void matrix_base<T>::append_col(const vector_base<T>& vct)
+		{
+			assert(vct.size() == rows_);
+			auto offs = 0;
+			for (int i = 0; i < rows_; i++)
+			{
+				vector_base<T>::insert(cols_ * i + (cols_ - offs), vct[i]);
+				if (i == 0) {
+					cols_++;
+					offs++;
+				};
+			}
+		}
+
+		template<typename T>
+		inline void matrix_base<T>::append(const vector_base<T>& vct, bool isrow)
+		{
+			isrow ? append_row(vct) : append_col(vct);
+		}
+
+		template<typename T>
+		inline void matrix_base<T>::insert_row(int32_t ind, const vector_base<T>& vct)
+		{
+			assert(vct.size() == cols_);
+			vector_base<T>::insert(cols_ * ind, vct);
+			rows_++;
+		}
+
+		template<typename T>
+		inline void matrix_base<T>::insert_col(int32_t ind, const vector_base<T>& vct)
+		{
+			assert(vct.size() == rows_);
+			if (ind < 0) ind = rows_ + ind;
+			for (int i = 0; i < rows_; i++)
+			{
+				vector_base<T>::insert(cols_ * i + ind, vct[i]);
+				if (i == 0) cols_++;
+			}
+		}
+
+		template<typename T>
+		inline void matrix_base<T>::insert(int32_t ind, const vector_base<T>& vct, bool isrow)
+		{
+			isrow ? insert_row(ind, vct) : insert_col(ind, vct);
+		}
+
+		template<typename T>
 		inline size1D_t matrix_base<T>::rows() const
 		{
 			return rows_;
@@ -112,44 +167,34 @@ namespace nm
 			return vector_base<T>();
 		}
 
-		// 0 1		// (1, 3) (0, 1) (2, 1)
-		// 2 3      // 2 3
-		// 4 5      // 6 7
-		// 6 7
-
-
 		template<typename T>
 		inline matrix_base<T> matrix_base<T>::slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend, int32_t rstp, int32_t cstp)
 		{
-			auto m = 1 + nm::abs(rend - rbeg) / nm::abs(rstp);
-			auto n = 1 + nm::abs(cend - cbeg) / nm::abs(cstp);
-			if (rbeg > rend) rstp = -rstp;
-
-			auto beg = cols_ * rbeg + cbeg;
-			auto end = cols_ * rend + cend;
-			auto stp = cols_ * rstp + cstp;
-
-			matrix_base<T> result(m, n);
-			result.stdvect() = vector_base<T>::slice(beg, end, stp).stdvect();
-			return result;
+			
 		}
 
 		template<typename T>
 		inline size2D_t matrix_base<T>::argmax() const
 		{
-			return size2D_t();
+			auto ind = vector_base<T>::argmax();
+			return size2D_t(ind / rows_, ind % cols_);
 		}
 
 		template<typename T>
 		inline size2D_t matrix_base<T>::argmin() const
 		{
-			return size2D_t();
+			auto ind = vector_base<T>::argmin();
+			return size2D_t(ind / rows_, ind % cols_);
 		}
 
 		template<typename T>
 		inline std::pair<size2D_t, size2D_t> matrix_base<T>::argminmax() const
 		{
-			return std::pair<size2D_t, size2D_t>();
+			auto [imin, imax] = vector_base<T>::argminmax();
+			return std::make_pair(
+				size2D_t(imin / rows_, imin % cols_),
+				size2D_t(imax / rows_, imax % cols_)
+			);
 		}
 
 		template<typename T>
@@ -295,16 +340,16 @@ namespace nm
 }
 
 template<typename T>
-inline std::ostream& operator<<(std::ostream& out, const nm::tybase::matrix_base<T>& matrix)
+inline std::ostream& operator<<(std::ostream& out, const nm::tybase::matrix_base<T>& mtr)
 {
-	auto [m, n] = matrix.size();
+	auto [m, n] = mtr.size();
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++)
-			out << "\t" << matrix(i, j);
+			out << "\t" << mtr(i, j);
 		out << "\n";
 	}
-	out << typeid(matrix).name() << "\n";
+	out << typeid(mtr).name() << " { " << m << ", " << n << " }\n";
 	return out;
 }
 

@@ -10,11 +10,11 @@ namespace nm
 	{
 		// **************************************************************************************** VECTOR
 
-		template <typename T> T abs(const tybase::vector_base<T>& vct);
-
 		template<typename T> auto norm1(const tybase::vector_base<T>& vct);
 		template<typename T> auto norm2(const tybase::vector_base<T>& vct);
 		template<typename T> auto normi(const tybase::vector_base<T>& vct);
+		template<typename T> auto norme(const tybase::vector_base<T>& vct);
+		template<typename T> auto normp(const uint128_t& p, const tybase::vector_base<T>& vct);
 
 		// **************************************************************************************** MATRIX
 
@@ -25,6 +25,14 @@ namespace nm
 		template<typename T> auto norm2(const tybase::matrix_base<T>& mtr);
 		template<typename T> auto normi(const tybase::matrix_base<T>& mtr);
 	}
+
+	// **************************************************************************************** ABSOLUTE, ARGUMENT
+
+	template <typename T> T abs(const tybase::vector_base<T>& vct);
+	template <typename T> T abs(const tybase::matrix_base<T>& mtr);
+
+	template <typename T> T abs(const tybase::complex_base<T>& value);
+	template <typename T> T arg(const tybase::complex_base<T>& value);
 
 	// ******************************************************************************************** IDENTITY MATRICES
 
