@@ -106,14 +106,15 @@ namespace nm
 		}
 
 		template<typename T>
-		inline vector_base<T> vector_base<T>::slice(int128_t beg, int128_t end, int128_t step) const
+		inline vector_base<T> vector_base<T>::slice(int128_t beg, int128_t end, uint128_t step) const
 		{
-			auto n = 1 + std::abs(end - beg) / step;
+			int128_t stp = step;
+			auto n = 1 + nm::abs(end - beg) / step;
 			if (beg > end)
-				step = -step;
+				stp = -stp;
 			vector_base<T> result(n);
 			for (int i = 0; i < n; i++)
-				result[i] = (*this)[beg + i * step];
+				result[i] = (*this)[beg + i * stp];
 			return result;
 		}
 
@@ -480,8 +481,8 @@ inline std::ostream& operator<<(std::ostream& out, const nm::tybase::vector_base
 {
 	auto& vect = vct.stdvect();
 	for (auto& elem : vect)
-		out << elem << "\n";
-	out << typeid(vct).name() << " { " << vct.size() << " }\n";
+		out << elem << " ";
+	out << "\n" << typeid(vct).name() << " { " << vct.size() << " }\n";
 	return out;
 }
 

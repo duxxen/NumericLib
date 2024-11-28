@@ -82,7 +82,7 @@ namespace nm
 			const T& operator [](int128_t i) const;
 			const T& operator ()(int128_t i) const;
 
-			vector_base slice(int128_t beg, int128_t end, int128_t step = 1) const;
+			vector_base slice(int128_t beg, int128_t end, uint128_t step = 1) const;
 
 			auto begin();
 			auto begin() const;

@@ -37,9 +37,13 @@ namespace nm
 
 			// ******************************************************************************** CONSTRUCTION
 
-			matrix_base(size1D_t mn = 0);
+			matrix_base(size2D_t mn);
 			matrix_base(size1D_t m, size1D_t n);
 			matrix_base(size1D_t m, size1D_t n, T value);
+
+			matrix_base(size2D_t mn, const vector_base<T>& vect);
+			matrix_base(size1D_t m, size1D_t n, const vector_base<T>& vect);
+
 			matrix_base(const std::initializer_list<std::initializer_list<T>>& rawmatr);
 
 			void fill_diagonal(T value, int32_t index = 0);
@@ -71,7 +75,7 @@ namespace nm
 			vector_base<T> diagonal(int128_t i) const;
 
 			matrix_base slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend,
-				int32_t rstp = 1, int32_t cstp = 1);
+				uint32_t rstp = 1, uint32_t cstp = 1);
 
 			// ******************************************************************************** MINMAX
 
@@ -87,6 +91,15 @@ namespace nm
 			matrix_base transposed() const;
 
 			matrix_base inversed() const;
+
+			// ******************************************************************************** MATRIX TYPES
+
+			bool is_square() const;
+			bool is_diagonal() const;
+
+			bool is_triangle() const;
+			bool is_triangleL() const;
+			bool is_triangleU() const;
 
 			// ******************************************************************************** UNARY OPERATIONS
 

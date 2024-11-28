@@ -6,10 +6,10 @@ namespace nm
 	namespace tybase
 	{
 		template<typename T>
-		inline matrix_base<T>::matrix_base(size1D_t mn) :
-			vector_base<T>(mn * mn),
-			rows_(mn),
-			cols_(mn)
+		inline matrix_base<T>::matrix_base(size2D_t mn) :
+			vector_base<T>(mn.first * mn.second),
+			rows_(mn.first),
+			cols_(mn.second)
 		{
 		}
 
@@ -24,6 +24,22 @@ namespace nm
 		template<typename T>
 		inline matrix_base<T>::matrix_base(size1D_t m, size1D_t n, T value) :
 			vector_base<T>(m * n, value),
+			rows_(m),
+			cols_(n)
+		{
+		}
+
+		template<typename T>
+		inline matrix_base<T>::matrix_base(size2D_t mn, const vector_base<T>& vect) :
+			vector_base<T>(vect),
+			rows_(mn.first),
+			cols_(mn.second)
+		{
+		}
+
+		template<typename T>
+		inline matrix_base<T>::matrix_base(size1D_t m, size1D_t n, const vector_base<T>& vect) :
+			vector_base<T>(vect),
 			rows_(m),
 			cols_(n)
 		{
@@ -46,18 +62,45 @@ namespace nm
 		template<typename T>
 		inline void matrix_base<T>::fill_diagonal(T value, int32_t index)
 		{
-			// TODO: вставьте здесь оператор return
+			auto iof = index >= 0 ? index : 0;
+			auto jof = index < 0 ? -index : 0;
+			for (int i = 0; i < rows_; i++)
+			{
+				if (i + iof >= rows_ || i + jof >= cols_)
+					break;
+				(*this)(i + iof, i + jof) = value;
+			}
 		}
 
 		template<typename T>
 		inline void matrix_base<T>::fill_diagonal(const vector_base<T>& values, int32_t index)
 		{
-			// TODO: вставьте здесь оператор return
+			auto iof = 0;
+			auto jof = 0;
+			if (index >= 0) {
+				iof = index;
+				assert(values.size() == rows_ - iof);
+			}
+			else {
+				jof = -index;
+				assert(values.size() == cols_ - jof);
+			}
+
+			for (int i = 0; i < values.size(); i++)
+				(*this)(i + iof, i + jof) = values[i];
 		}
 
 		template<typename T>
 		inline void matrix_base<T>::append_row(const vector_base<T>& vct)
 		{
+			if (rows_ == 0)
+			{
+				this->base = vct.stdvect();
+				rows_ = 1;
+				cols_ = vct.size();
+				return;
+			}
+
 			assert(vct.size() == cols_);
 			vector_base<T>::append(vct);
 			rows_++;
@@ -66,6 +109,14 @@ namespace nm
 		template<typename T>
 		inline void matrix_base<T>::append_col(const vector_base<T>& vct)
 		{
+			if (cols_ == 0)
+			{
+				this->base = vct.stdvect();
+				rows_ = vct.size();
+				cols_ = 1;
+				return;
+			}
+
 			assert(vct.size() == rows_);
 			auto offs = 0;
 			for (int i = 0; i < rows_; i++)
@@ -162,15 +213,49 @@ namespace nm
 		}
 
 		template<typename T>
-		inline vector_base<T> matrix_base<T>::diagonal(int128_t i) const
+		inline vector_base<T> matrix_base<T>::diagonal(int128_t index) const
 		{
-			return vector_base<T>();
+			auto iof = index >= 0 ? index : 0;
+			auto jof = index < 0 ? -index : 0;
+			int128_t szd = rows_ - cols_;
+
+			auto stp = cols_ + 1; 
+			auto beg = cols_ * iof + jof;
+			auto endi = beg + (rows_ - iof - 1) * stp;
+			auto endj = beg + (cols_ - jof - 1) * stp;
+			
+			if (szd == 0) {
+				if (iof)	return vector_base<T>::slice(beg, endi, stp);
+				else		return vector_base<T>::slice(beg, endj, stp);
+			}
+			else if (szd > 0) {
+				if (iof <= cols_)	return vector_base<T>::slice(beg, endj, stp);
+				else				return vector_base<T>::slice(beg, endi, stp);
+			}
+			else {
+				if (jof >= rows_)	return vector_base<T>::slice(beg, endj, stp);
+				else				return vector_base<T>::slice(beg, endi, stp);
+			}
 		}
 
 		template<typename T>
-		inline matrix_base<T> matrix_base<T>::slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend, int32_t rstp, int32_t cstp)
+		inline matrix_base<T> matrix_base<T>::slice(int32_t rbeg, int32_t rend, int32_t cbeg, int32_t cend, uint32_t rstp, uint32_t cstp)
 		{
-			
+			int32_t rst = rstp;
+			int32_t cst = cstp;
+			auto m = 1 + std::abs(rend - rbeg) / rstp;
+			auto n = 1 + std::abs(cend - cbeg) / cstp;
+			if (rbeg > rend) rst = -rst;
+			if (cbeg > cend) cst = -cst;
+
+			matrix_base<T> result;
+			for (int i = 0; i < m; i++)
+				result.append_row(vector_base<T>::slice(
+					cols_ * (rbeg + i * rst) + cbeg, 
+					cols_ * (rbeg + i * rst) + cend, 
+					cstp
+				));
+			return result;
 		}
 
 		template<typename T>
@@ -228,6 +313,59 @@ namespace nm
 		}
 
 		template<typename T>
+		inline bool matrix_base<T>::is_square() const
+		{
+			return rows_ == cols_;
+		}
+
+		template<typename T>
+		inline bool matrix_base<T>::is_diagonal() const
+		{
+			if (!is_square()) return false;
+
+			for (int i = 0; i < rows_; i++)
+				for (int j = 0; j < cols_; j++)
+				{
+					if (i == j) continue;
+					if ((*this)(i, j) != 0)
+						return false;
+				}
+			return true;
+		}
+
+		template<typename T>
+		inline bool matrix_base<T>::is_triangle() const
+		{
+			is_triangleL() || is_triangleU();
+		}
+
+		template<typename T>
+		inline bool matrix_base<T>::is_triangleL() const
+		{
+			if (!is_square()) return false;
+
+			for (int i = 0; i < rows_; i++)
+				for (int j = 0; j < i; j++)
+					if ((*this)(i, j) != 0)
+						return false;
+			
+			return true;
+		}
+
+		template<typename T>
+		inline bool matrix_base<T>::is_triangleU() const
+		{
+			if (!is_square()) return false;
+
+			for (int i = 0; i < rows_; i++)
+				for (int j = i+1; j < cols_; j++)
+					if ((*this)(i, j) != 0)
+						return false;
+
+			return true;
+		}
+
+		template<typename T>
 		inline auto matrix_base<T>::det() const
 		{
 		}
@@ -250,91 +388,149 @@ namespace nm
 		template<typename T>
 		inline matrix_base<T> matrix_base<T>::operator-() const
 		{
-			return matrix_base();
+			return matrix_base<T>(size(), vector_base<T>::operator-());
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::dot(const matrix_base<V>& oth) const
 		{
+			return (*this) * oth;
+		}
+
+		template<typename T>
+		template<typename V>
+		inline auto vector_base<T>::dot(const matrix_base<V>& mat) const
+		{
+			return (*this) * mat;
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::dot(const vector_base<V>& vct) const
 		{
+			return (*this) * vct;
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator+(const V& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			return matrix_base<RT>(size(), vector_base<T>::operator+(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator-(const V& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			return matrix_base<RT>(size(), vector_base<T>::operator-(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator*(const V& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			return matrix_base<RT>(size(), vector_base<T>::operator*(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator/(const V& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			return matrix_base<RT>(size(), vector_base<T>::operator/(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator+(const complex_base<V>& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, complex_base<T>, complex_base<V>>;
+			return matrix_base<RT>(size(), vector_base<T>::operator-(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator-(const complex_base<V>& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, complex_base<T>, complex_base<V>>;
+			return matrix_base<RT>(size(), vector_base<T>::operator-(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator*(const complex_base<V>& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, complex_base<T>, complex_base<V>>;
+			return matrix_base<RT>(size(), vector_base<T>::operator-(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator/(const complex_base<V>& value) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, complex_base<T>, complex_base<V>>;
+			return matrix_base<RT>(size(), vector_base<T>::operator-(value));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator+(const matrix_base<V>& oth) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			return matrix_base<RT>(size(), vector_base<T>::operator+(vector_base<T>(oth)));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator-(const matrix_base<V>& oth) const
 		{
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			return matrix_base<RT>(size(), vector_base<T>::operator-(vector_base<T>(oth)));
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator*(const matrix_base<V>& oth) const
 		{
+			auto [l, m] = size();
+			auto n = oth.cols();
+			assert(m == oth.rows());
+
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			matrix_base<RT> result(l, n);
+			for (int i = 0; i < l; i++)
+				for (int j = 0; j < n; j++)
+				{
+					RT sum = 0;
+					for (int k = 0; k < m; k++)
+						sum += (*this)(i, k) * oth(k, j);
+					result(i, j) = sum;
+				}
+
+			return result;
 		}
 
 		template<typename T>
 		template<typename V>
 		inline auto matrix_base<T>::operator*(const vector_base<V>& vct) const
 		{
+			auto [m, n] = size();
+			assert(n == vct.size());
+
+			using RT = tycomp::conditional_t<tycomp::is_stronger<T, V>::value, T, V>;
+			vector_base<RT> result(m);
+			for (int i = 0; i < m; i++)
+			{
+				RT sum = 0;
+				for (int j = 0; j < n; j++)
+					sum += (*this)(i, j) * vct[j];
+				result[i] = sum;
+			}
+			return result;
 		}
 	}
 }
@@ -356,44 +552,71 @@ inline std::ostream& operator<<(std::ostream& out, const nm::tybase::matrix_base
 template<typename T, typename V>
 inline auto operator+(const V& val, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, T, V>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), val + nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator-(const V& val, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, T, V>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), val - nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator*(const V& val, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, T, V>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), val * nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator/(const V& val, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, T, V>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), val / nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator+(const nm::tybase::complex_base<V>& cmp, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, nm::tybase::complex_base<T>, nm::tybase::complex_base<V>>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), cmp + nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator-(const nm::tybase::complex_base<V>& cmp, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, nm::tybase::complex_base<T>, nm::tybase::complex_base<V>>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), cmp - nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator*(const nm::tybase::complex_base<V>& cmp, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, nm::tybase::complex_base<T>, nm::tybase::complex_base<V>>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), cmp * nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator/(const nm::tybase::complex_base<V>& cmp, const nm::tybase::matrix_base<T>& mtr)
 {
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, nm::tybase::complex_base<T>, nm::tybase::complex_base<V>>;
+	return nm::tybase::matrix_base<RT>(mtr.size(), cmp / nm::tybase::vector_base<T>(mtr));
 }
 
 template<typename T, typename V>
 inline auto operator*(const nm::tybase::vector_base<V>& vct, const nm::tybase::matrix_base<T>& mtr)
 {
+	assert(vct.size() == mtr.cols());
+	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, T, V>;
+	nm::tybase::vector_base<RT> product(vct.size());
+	for (int i = 0; i < vct.size(); i++)
+	{
+		RT sum = 0;
+		for (int j = 0; j < mtr.cols(); j++)
+			sum += vct[i] * mtr(i, j);
+		product[i] = sum;
+	}
+	return product;
 }
