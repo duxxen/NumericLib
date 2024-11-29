@@ -34,6 +34,8 @@ namespace nm
 	using std::abs;
 	using std::pow;
 	using std::sqrt;
+	using std::max;
+	using std::min;
 
 	// **************************************************************************************** TYPE DEFENITIONS
 

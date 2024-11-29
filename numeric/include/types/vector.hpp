@@ -194,6 +194,14 @@ namespace nm
 	typedef vect256c_t vectc_t;
 	#endif
 
+	// **************************************************************************************** VECTOR CREATION
+
+	vectf_t zeros(size1D_t n);
+
+	template <typename T> tybase::vector_base<T> zeros(size1D_t n);
+	template <typename T> tybase::vector_base<T> arrange(const T& beg, const T& end, const T& step);
+	template <typename T> tybase::vector_base<T> linspace(const T& beg, const T& end, size1D_t n);
+
 	// **************************************************************************************** LITERALS
 
 	namespace literals

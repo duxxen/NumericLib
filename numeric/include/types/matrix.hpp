@@ -38,6 +38,8 @@ namespace nm
 			// ******************************************************************************** CONSTRUCTION
 
 			matrix_base(size2D_t mn);
+			matrix_base(size2D_t mn, T value);
+
 			matrix_base(size1D_t m, size1D_t n);
 			matrix_base(size1D_t m, size1D_t n, T value);
 
@@ -85,7 +87,8 @@ namespace nm
 
 			// ******************************************************************************** TRANSFORMS
 
-			matrix_base normalized() const;
+			void normalize() const = delete;
+			matrix_base normalized() const = delete;
 
 			void transpose();
 			matrix_base transposed() const;
@@ -101,13 +104,19 @@ namespace nm
 			bool is_triangleL() const;
 			bool is_triangleU() const;
 
-			// ******************************************************************************** UNARY OPERATIONS
+			// ******************************************************************************** MATRIX OPERATIONS
 
-			auto det() const;
+			auto det() const;	// operations.inl
 
 			auto norm1() const;
 			auto norm2() const;
 			auto normi() const;
+			auto norme() const;
+			auto normp(const uint32_t& p) const;						// ?
+			auto normpq(const uint32_t& p, const uint32_t& q) const;	// ?
+
+			auto minor(int128_t i) const;
+			auto minor(int128_t i, int128_t j) const;
 
 			// ******************************************************************************** BINARY OPERATIONS
 
@@ -172,6 +181,20 @@ namespace nm
 	typedef matr128f_t matrf_t;
 	typedef matr256c_t matrc_t;
 	#endif
+
+	// **************************************************************************************** IDENTITY MATRICES
+
+	matrf_t identity(size1D_t n);
+	matrf_t triangle_l(size1D_t n);
+	matrf_t triangle_u(size1D_t n);
+
+	// **************************************************************************************** MATRIX CREATION
+
+	matrf_t zeros(size2D_t n);
+
+	template <typename T> tybase::matrix_base<T> zeros(size2D_t mn);
+	template <typename T> tybase::matrix_base<T> diagonal(size1D_t n, const T& value);
+	template <typename T> tybase::matrix_base<T> diagonal(const tybase::vector_base<T>& values);
 
 	// **************************************************************************************** TYPE COMPARING
 

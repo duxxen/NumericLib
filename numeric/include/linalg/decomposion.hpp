@@ -31,3 +31,5 @@ namespace nm
 		
 	}
 }
+
+#include "decomposition.inl"

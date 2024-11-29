@@ -3,6 +3,7 @@
 #include "../types/complex.hpp"
 #include "../types/vector.hpp"
 #include "../types/matrix.hpp"
+#include "decomposion.hpp"
 
 namespace nm
 {
@@ -24,7 +25,15 @@ namespace nm
 		template<typename T> auto norm1(const tybase::matrix_base<T>& mtr);
 		template<typename T> auto norm2(const tybase::matrix_base<T>& mtr);
 		template<typename T> auto normi(const tybase::matrix_base<T>& mtr);
+		template<typename T> auto norme(const tybase::matrix_base<T>& vct);
+		template<typename T> auto normp(const uint128_t& p, const tybase::matrix_base<T>& vct);
+		template<typename T> auto normp(const uint128_t& p, const uint128_t& q, const tybase::matrix_base<T>& vct);
 	}
+
+	// **************************************************************************************** POWER
+
+	template <typename T> tybase::vector_base<T> pow(const tybase::vector_base<T>& vct, float_t p);
+	template <typename T> tybase::matrix_base<T> pow(const tybase::matrix_base<T>& mtr, int64_t p);
 
 	// **************************************************************************************** ABSOLUTE, ARGUMENT
 
@@ -33,33 +42,6 @@ namespace nm
 
 	template <typename T> T abs(const tybase::complex_base<T>& value);
 	template <typename T> T arg(const tybase::complex_base<T>& value);
-
-	// ******************************************************************************************** IDENTITY MATRICES
-
-	matrf_t identity(size1D_t n);
-	matrf_t triangle_l(size1D_t n);
-	matrf_t triangle_u(size1D_t n);
-
-	// ******************************************************************************************** VECTOR CREATION
-
-	template <typename T> tybase::vector_base<T> arrange(const T& beg, const T& end, const T& step);
-	template <typename T> tybase::vector_base<T> linspace(const T& beg, const T& end, size1D_t n);
-
-	// ******************************************************************************************** MATRIX CREATION
-
-	template <typename T> tybase::matrix_base<T> diagonal(size1D_t n, const T& value);
-	template <typename T> tybase::matrix_base<T> diagonal(const tybase::vector_base<T>& values);
-
-	template <typename T>
-	tybase::matrix_base<T> multidiagonal(
-		const size1D_t& n,
-		const std::initializer_list<std::pair<int32_t, T>>& values
-	);
-
-	template <typename T> 
-	tybase::matrix_base<T> multidiagonal(
-		const std::initializer_list<std::pair<int32_t, tybase::vector_base<T>>>& diagonals
-	);
 
 	// ******************************************************************************************** MINMAX
 

@@ -14,6 +14,14 @@ namespace nm
 		}
 
 		template<typename T>
+		inline matrix_base<T>::matrix_base(size2D_t mn, T value) :
+			vector_base<T>(mn.first * mn.second, value),
+			rows_(mn.first),
+			cols_(mn.second)
+		{
+		}
+
+		template<typename T>
 		inline matrix_base<T>::matrix_base(size1D_t m, size1D_t n) :
 			vector_base<T>(m * n),
 			rows_(m),
@@ -283,12 +291,6 @@ namespace nm
 		}
 
 		template<typename T>
-		inline matrix_base<T> matrix_base<T>::normalized() const
-		{
-			return matrix_base();
-		}
-
-		template<typename T>
 		inline void matrix_base<T>::transpose()
 		{
 			auto copy = this->base;
@@ -309,7 +311,15 @@ namespace nm
 		template<typename T>
 		inline matrix_base<T> matrix_base<T>::inversed() const
 		{
-			return matrix_base();
+			assert(is_square());
+			auto m = rows();
+			auto d = det();
+
+			matrix_base<T> matr(m, m);
+			for (int i = 0; i < m; i++)
+				for (int j = 0; j < m; j++)
+					matr(j, i) = pow(-1, i + j + 2) * minor(i, j) / d;
+			return matr;
 		}
 
 		template<typename T>
@@ -336,7 +346,7 @@ namespace nm
 		template<typename T>
 		inline bool matrix_base<T>::is_triangle() const
 		{
-			is_triangleL() || is_triangleU();
+			return is_triangleL() || is_triangleU();
 		}
 
 		template<typename T>
@@ -366,23 +376,102 @@ namespace nm
 		}
 
 		template<typename T>
-		inline auto matrix_base<T>::det() const
-		{
-		}
-
-		template<typename T>
 		inline auto matrix_base<T>::norm1() const
 		{
+			using RT = tycomp::inner_switch<tycomp::is_complex<T>::value, T>::inner;
+
+			RT max = 0;
+			for (int j = 0; j < cols_; j++)
+			{
+				RT sum = 0;
+				for (int i = 0; i < rows_; i++)
+					sum += (*this)(i, j);
+				max = nm::max(max, sum);
+			}
+
+			return max;
 		}
 
 		template<typename T>
 		inline auto matrix_base<T>::norm2() const
 		{
+			using RT = tycomp::inner_switch<tycomp::is_complex<T>::value, T>::inner;
+			RT sum = 0;
+			for (int i = 0; i < rows_; i++)
+				for (int j = 0; j < cols_; j++)
+					sum += nm::pow(nm::abs((*this)(i, j)), 2);
+			return nm::sqrt(sum);
 		}
 
 		template<typename T>
 		inline auto matrix_base<T>::normi() const
 		{
+			using RT = tycomp::inner_switch<tycomp::is_complex<T>::value, T>::inner;
+
+			RT max = 0;
+			for (int i = 0; i < rows_; i++)
+			{
+				RT sum = 0;
+				for (int j = 0; j < cols_; j++)
+					sum += (*this)(i, j);
+				max = nm::max(max, sum);
+			}
+
+			return max;
+		}
+
+		template<typename T>
+		inline auto matrix_base<T>::norme() const
+		{
+			return vector_base<T>::norme();
+		}
+
+		template<typename T>
+		inline auto matrix_base<T>::normp(const uint32_t& p) const
+		{
+			return normpq(p, 1);
+		}
+
+		template<typename T>
+		inline auto matrix_base<T>::normpq(const uint32_t& p, const uint32_t& q) const
+		{
+			using RT = tycomp::inner_switch<tycomp::is_complex<T>::value, T>::inner;
+			RT sum = 0;
+			for (int j = 0; j < cols_; j++)
+			{
+				for (int i = 0; i < rows_; i++)
+					sum += nm::pow(nm::abs((*this)(i, j)), p);
+				sum = nm::pow(sum, (float64_t)q / p);
+			}
+			return nm::pow(sum, 1.0 / p);
+		}
+
+		template<typename T>
+		inline auto matrix_base<T>::minor(int128_t i) const
+		{
+			return minor(i, i);
+		}
+
+		template<typename T>
+		inline auto matrix_base<T>::minor(int128_t in, int128_t jn) const
+		{
+			auto [m, n] = size();
+			auto ioff = false;
+			auto joff = false;
+
+			matrix_base<T> matr(m - 1, n - 1);
+			for (int i = 0; i < m; i++)
+			{
+				if (i == in) { ioff = true; continue; };
+
+				joff = false;
+				for (int j = 0; j < n; j++)
+				{
+					if (j == jn) { joff = true; continue; };
+					matr(i - ioff, j - joff) = (*this)(i, j);
+				}
+			}
+			return matr.det();
 		}
 
 		template<typename T>
@@ -533,6 +622,57 @@ namespace nm
 			return result;
 		}
 	}
+
+	matrf_t identity(size1D_t n)
+	{
+		return diagonal<float_t>(n, 1);
+	}
+
+	matrf_t triangle_l(size1D_t n)
+	{
+		matrf_t tri(n, n, 0);
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j <= i; j++)
+				tri(i, j) = 1;
+		return tri;
+	}
+
+	matrf_t triangle_u(size1D_t n)
+	{
+		matrf_t tri(n, n, 0);
+		for (int i = 0; i < n; i++)
+			for (int j = i; j < n; j++)
+				tri(i, j) = 1;
+		return tri;
+	}
+
+	matrf_t zeros(size2D_t n)
+	{
+		return zeros<float_t>(n);
+	}
+
+	template <typename T>
+	tybase::matrix_base<T> zeros(size2D_t n)
+	{
+		return tybase::matrix_base<T>(n, 0);
+	}
+
+	template<typename T>
+	tybase::matrix_base<T> diagonal(size1D_t n, const T& value)
+	{
+		tybase::matrix_base<T> diag(n, n);
+		diag.fill_diagonal(value);
+		return diag;
+	}
+
+	template<typename T>
+	tybase::matrix_base<T> diagonal(const tybase::vector_base<T>& values)
+	{
+		auto n = values.size();
+		tybase::matrix_base<T> diag(n, n);
+		diag.fill_diagonal(values);
+		return diag;
+	}
 }
 
 template<typename T>
@@ -608,15 +748,18 @@ inline auto operator/(const nm::tybase::complex_base<V>& cmp, const nm::tybase::
 template<typename T, typename V>
 inline auto operator*(const nm::tybase::vector_base<V>& vct, const nm::tybase::matrix_base<T>& mtr)
 {
-	assert(vct.size() == mtr.cols());
+	assert(vct.size() == mtr.rows());
 	using RT = nm::tycomp::conditional_t<nm::tycomp::is_stronger<T, V>::value, T, V>;
+
 	nm::tybase::vector_base<RT> product(vct.size());
-	for (int i = 0; i < vct.size(); i++)
+	for (int j = 0; j < mtr.cols(); j++)
 	{
 		RT sum = 0;
-		for (int j = 0; j < mtr.cols(); j++)
+		for (int i = 0; i < mtr.rows(); i++)
 			sum += vct[i] * mtr(i, j);
-		product[i] = sum;
+		product[j] = sum;
 	}
+
+
 	return product;
 }

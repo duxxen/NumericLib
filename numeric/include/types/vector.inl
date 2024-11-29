@@ -474,6 +474,29 @@ namespace nm
 				base[i] -= oth[i];
 		}
 	}
+
+	vectf_t zeros(size1D_t n)
+	{
+		return zeros<float_t>(n);
+	}
+
+	template <typename T>
+	tybase::vector_base<T> zeros(size1D_t n)
+	{
+		return tybase::vector_base<T>(n, 0);
+	}
+
+	template<typename T>
+	tybase::vector_base<T> arrange(const T& beg, const T& end, const T& step)
+	{
+		return tybase::vector_base<T>();
+	}
+
+	template<typename T>
+	tybase::vector_base<T> linspace(const T& beg, const T& end, size1D_t n)
+	{
+		return tybase::vector_base<T>();
+	}
 }
 
 template<typename T>
