@@ -25,9 +25,9 @@ namespace nm
 		template<typename T> auto norm1(const tybase::matrix_base<T>& mtr);
 		template<typename T> auto norm2(const tybase::matrix_base<T>& mtr);
 		template<typename T> auto normi(const tybase::matrix_base<T>& mtr);
-		template<typename T> auto norme(const tybase::matrix_base<T>& vct);
-		template<typename T> auto normp(const uint128_t& p, const tybase::matrix_base<T>& vct);
-		template<typename T> auto normp(const uint128_t& p, const uint128_t& q, const tybase::matrix_base<T>& vct);
+		template<typename T> auto norme(const tybase::matrix_base<T>& mtr);
+		template<typename T> auto normp(const uint128_t& p, const tybase::matrix_base<T>& mtr);
+		template<typename T> auto normpq(const uint128_t& p, const uint128_t& q, const tybase::matrix_base<T>& mtr);
 	}
 
 	// **************************************************************************************** POWER
@@ -52,9 +52,9 @@ namespace nm
 	template <typename T> size1D_t argmin(const tybase::vector_base<T>& vct);
 	template <typename T> size2D_t argminmax(const tybase::vector_base<T>& vct);
 
-	template <typename T> size2D_t argmax(const tybase::matrix_base<T>& vct);
-	template <typename T> size2D_t argmin(const tybase::matrix_base<T>& vct);
-	template <typename T> std::pair<size2D_t, size2D_t> argminmax(const tybase::matrix_base<T>& vct);
+	template <typename T> size2D_t argmax(const tybase::matrix_base<T>& mtr);
+	template <typename T> size2D_t argmin(const tybase::matrix_base<T>& mtr);
+	template <typename T> std::pair<size2D_t, size2D_t> argminmax(const tybase::matrix_base<T>& mtr);
 
 	// ******************************************************************************************** VECTOR PRODUCT
 

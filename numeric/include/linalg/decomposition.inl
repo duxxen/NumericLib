@@ -28,6 +28,8 @@ namespace nm
 				for (int i = k; i < n; i++)
 					for (int j = k-1; j < n; j++)
 						umtr(i, j) = umtr(i, j) - lmtr(i, k-1)*umtr(k-1, j);
+
+				std::cout << lmtr;
 			}
 
 

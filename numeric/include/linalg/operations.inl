@@ -57,6 +57,42 @@ namespace nm
 
 			return det;
 		}
+
+		template<typename T>
+		auto norm1(const tybase::matrix_base<T>& mtr)
+		{
+			return mtr.norm1();
+		}
+
+		template<typename T>
+		auto norm2(const tybase::matrix_base<T>& mtr)
+		{
+			return mtr.norm2();
+		}
+
+		template<typename T>
+		auto normi(const tybase::matrix_base<T>& mtr)
+		{
+			return mtr.normi();
+		}
+
+		template<typename T>
+		auto norme(const tybase::matrix_base<T>& mtr)
+		{
+			return mtr.norme();
+		}
+
+		template<typename T>
+		auto normp(const uint128_t& p, const tybase::matrix_base<T>& mtr)
+		{
+			return mtr.normp(p);
+		}
+
+		template<typename T>
+		auto normpq(const uint128_t& p, const uint128_t& q, const tybase::matrix_base<T>& mtr)
+		{
+			return mtr.normpq(p, q);
+		}
 	}
 
 	template<typename T>
@@ -77,6 +113,78 @@ namespace nm
 		for (int i = 1; i < nm::abs(p); i++)
 			res = res * res;
 		return res;
+	}
+
+	template<typename T>
+	T abs(const tybase::vector_base<T>& vct)
+	{
+		return vct.abs();
+	}
+
+	template<typename T>
+	T abs(const tybase::matrix_base<T>& mtr)
+	{
+		return mtr.det();
+	}
+
+	template<typename T>
+	T abs(const tybase::complex_base<T>& value)
+	{
+		return value.abs();
+	}
+
+	template<typename T>
+	T arg(const tybase::complex_base<T>& value)
+	{
+		return value.arg();
+	}
+
+	template<typename T>
+	T max(const tybase::vector_base<T>& vct)
+	{
+		return vct.max();
+	}
+
+	template<typename T>
+	T min(const tybase::vector_base<T>& vct)
+	{
+		return vct.min();
+	}
+
+	template<typename T>
+	size1D_t argmax(const tybase::vector_base<T>& vct)
+	{
+		return vct.argmax();
+	}
+
+	template<typename T>
+	size1D_t argmin(const tybase::vector_base<T>& vct)
+	{
+		return vct.argmin();
+	}
+
+	template<typename T>
+	size2D_t argminmax(const tybase::vector_base<T>& vct)
+	{
+		return vct.argminmax();
+	}
+
+	template<typename T>
+	size2D_t argmax(const tybase::matrix_base<T>& mtr)
+	{
+		return mtr.argmax();
+	}
+
+	template<typename T>
+	size2D_t argmin(const tybase::matrix_base<T>& mtr)
+	{
+		return mtr.argmin();
+	}
+
+	template<typename T>
+	std::pair<size2D_t, size2D_t> argminmax(const tybase::matrix_base<T>& mtr)
+	{
+		return mtr.argminmax();
 	}
 
 	template<typename T, typename V>
@@ -109,7 +217,11 @@ namespace nm
 		return vct.dot(mtr);
 	}
 
-
+	template<typename T, typename ...Rest>
+	auto multidot(const tybase::vector_base<T> vct, const Rest & ...rest)
+	{
+		return T(0);
+	}
 
 	template<typename T>
 	inline auto tybase::matrix_base<T>::det() const
